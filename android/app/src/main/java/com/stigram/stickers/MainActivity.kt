@@ -43,6 +43,10 @@ class MainActivity : Activity() {
         root.addView(TextView(this).apply { text="Stigram Stickers"; textSize=28f; setTextColor(0xFF182238.toInt()); gravity=Gravity.CENTER; setPadding(0,0,0,dp(8)) })
         root.addView(TextView(this).apply { text="حوّل ملصقاتك إلى حزم واتساب"; textSize=15f; gravity=Gravity.CENTER; setTextColor(0xFF596579.toInt()); setPadding(0,0,0,dp(20)) })
         root.addView(Button(this).apply { text="＋ استيراد صور الملصقات"; setOnClickListener { pick() } })
+        root.addView(Button(this).apply {
+            text="افتح موقع Stigram لصناعة وتعديل الملصقات"
+            setOnClickListener { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://uday122t.github.io/Stigram/"))) }
+        })
         root.addView(TextView(this).apply { text="حزمك"; textSize=20f; setTextColor(0xFF182238.toInt()); setPadding(0,dp(22),0,dp(8)) })
         store.all().forEach { pack ->
             val card=LinearLayout(this).apply { orientation=LinearLayout.VERTICAL; setPadding(dp(14),dp(12),dp(14),dp(12)); setBackgroundColor(0xFFFFFFFF.toInt()) }
@@ -60,7 +64,14 @@ class MainActivity : Activity() {
     override fun onActivityResult(requestCode:Int,resultCode:Int,data:Intent?) { super.onActivityResult(requestCode,resultCode,data); if(requestCode==44&&resultCode==RESULT_OK&&data!=null) importUris(data) }
     private fun handleIncoming(i:Intent?) {
         if(i==null)return
-        val uris=when(i.action) { Intent.ACTION_SEND -> listOfNotNull(i.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)); Intent.ACTION_SEND_MULTIPLE -> i.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM) ?: emptyList(); else -> emptyList() }
+        val shared = when(i.action) {
+            Intent.ACTION_SEND -> listOfNotNull(i.getParcelableExtra<Uri>(Intent.EXTRA_STREAM))
+            Intent.ACTION_SEND_MULTIPLE -> i.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM) ?: emptyList()
+            else -> emptyList()
+        }
+        val fromClip = mutableListOf<Uri>()
+        i.clipData?.let { clip -> for (n in 0 until clip.itemCount) clip.getItemAt(n).uri?.let { fromClip.add(it) } }
+        val uris = (shared + fromClip).distinct()
         if(uris.isNotEmpty()) importList(uris)
     }
     private fun importUris(i:Intent) {

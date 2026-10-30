@@ -90,6 +90,23 @@
     }
   }
 
+
+  async function whatsappEditor() {
+    const canvas = document.getElementById("editorCanvas");
+    if (!canvas) return;
+    try {
+      const blob = await new Promise((resolve, reject) => canvas.toBlob(file => file ? resolve(file) : reject(new Error("تعذر تجهيز الصورة")), "image/webp", 0.9));
+      const file = new File([blob], "stigram-sticker.webp", { type: "image/webp" });
+      if (await shareFile(file, "Stigram sticker", "ملصق WebP من Stigram")) {
+        toast("اختار WhatsApp من قائمة المشاركة. لإضافته كملصق ضمن حزمة يلزم تطبيق حزم ملصقات.");
+      } else {
+        const url = URL.createObjectURL(blob), a = document.createElement("a");
+        a.href = url; a.download = file.name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2500);
+        toast("تم تنزيل الملصق بصيغة WebP؛ أرسله أو أضفه عبر تطبيق حزم ملصقات WhatsApp.");
+      }
+    } catch (error) { toast(error.message || "تعذر تجهيز ملصق WhatsApp"); }
+  }
+
   function addButtons(card) {
     if (card.dataset.stigramShareReady === "1") return;
     const actions = card.querySelector(".card-actions");
@@ -115,6 +132,10 @@
   function scan(root) {
     if (root.matches?.(".sticker-card")) addButtons(root);
     root.querySelectorAll?.(".sticker-card").forEach(addButtons);
+  }
+  const editorToolbar = document.querySelector("#page-create .toolbar");
+  if (editorToolbar && !document.getElementById("whatsappEditorBtn")) {
+    const button = document.createElement("button"); button.type = "button"; button.id = "whatsappEditorBtn"; button.className = "btn small"; button.textContent = "WhatsApp"; button.title = "تجهيز الملصق الحالي بصيغة WebP للمشاركة"; button.addEventListener("click", whatsappEditor); editorToolbar.appendChild(button);
   }
   scan(document);
   new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {

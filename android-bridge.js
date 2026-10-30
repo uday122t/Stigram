@@ -53,15 +53,15 @@
   async function loadOwnStickers() {
     const list = $("androidPackList");
     if (!list) return;
-    if (!window.user || !window.sb) {
+    if (typeof user === "undefined" || !user || typeof sb === "undefined" || !sb) {
       list.innerHTML = '<div class="empty">سجّل الدخول أولاً لعرض ملصقات حسابك</div>';
       updateCount();
       return;
     }
     list.innerHTML = '<div class="empty">جارٍ تحميل ملصقاتك...</div>';
-    const result = await window.sb.from("stickers")
+    const result = await sb.from("stickers")
       .select("id,title,media_url,media_type")
-      .eq("user_id", window.user.id)
+      .eq("user_id", user.id)
       .eq("media_type", "image")
       .order("created_at", { ascending: false })
       .limit(100);
@@ -134,7 +134,7 @@
 
   const start = () => {
     addPanel();
-    if (window.user && window.sb) loadOwnStickers();
+    if (typeof user !== "undefined" && user && typeof sb !== "undefined" && sb) loadOwnStickers();
   };
   start();
   document.querySelectorAll('[data-page="profile"]').forEach(button => button.addEventListener("click", () => setTimeout(start, 80)));
@@ -142,5 +142,5 @@
   if (typeof previousProfile === "function") {
     window.profile = function(...args) { const result = previousProfile.apply(this, args); setTimeout(start, 80); return result; };
   }
-  if (window.sb?.auth) window.sb.auth.onAuthStateChange(() => setTimeout(start, 150));
+  if (typeof sb !== "undefined" && sb?.auth) sb.auth.onAuthStateChange(() => setTimeout(start, 150));
 })();

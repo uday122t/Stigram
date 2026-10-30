@@ -38,7 +38,7 @@ class StickerContentProvider : ContentProvider() {
         }
         return MatrixCursor(projection ?: arrayOf(OpenableColumns.DISPLAY_NAME))
     }
-    override fun openFile(uri: Uri, mode: String) = openAssetFile(uri, mode)?.fileDescriptor?.let { ParcelFileDescriptor.dup(it) }
+    override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? = openAssetFile(uri, mode)?.let { ParcelFileDescriptor.dup(it.fileDescriptor) }
     override fun openAssetFile(uri: Uri, mode: String): android.content.res.AssetFileDescriptor? {
         val p = uri.pathSegments
         if (p.size < 3 || p[0] != "stickers_asset") throw FileNotFoundException(uri.toString())

@@ -1,6 +1,7 @@
 package com.stigram.stickers
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -18,8 +19,8 @@ import java.io.FileOutputStream
 import java.util.UUID
 
 data class Pack(val id:String,val name:String,val publisher:String,val tray:String,val version:String,val files:List<String>)
-class PackStore(private val activity: Activity) {
-    private val prefs=activity.getSharedPreferences("packs",0)
+class PackStore(private val context: Context) {
+    private val prefs=context.getSharedPreferences("packs",0)
     fun all():List<Pack> = prefs.getStringSet("ids", emptySet())!!.mapNotNull { id ->
         val raw=prefs.getString(id,null) ?: return@mapNotNull null
         val bits=raw.split("|")

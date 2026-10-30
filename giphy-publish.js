@@ -28,6 +28,78 @@
   const resultBox = panel.querySelector("#giphyPublishResult");
   const safeFileName = name => String(name || "stigram.gif").replace(/[^a-z0-9._-]/gi, "-").slice(0, 70);
 
+  async function validateStickerGif(file) {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    if (bytes.length < 20) throw new Error("ملف GIF غير صالح أو فارغ.");
+    let offset = 13;
+    const screenPacked = bytes[10];
+    if (screenPacked & 0x80) offset += 3 * (1 << ((screenPacked & 7) + 1));
+    let frames = 0;
+    let firstFrameTransparentFlag = false;
+    let transparencyFlag = false;
+    const skipBlocks = start => {
+      let pos = start;
+      while (pos < bytes.length) {
+        const size = bytes[pos++];
+        if (size === 0) return pos;
+        pos += size;
+        if (pos > bytes.length) throw new Error("ملف GIF تالف.");
+      }
+      throw new Error("ملف GIF غير مكتمل.");
+    };
+    while (offset < bytes.length) {
+      const marker = bytes[offset++];
+      if (marker === 0x3b) break;
+      if (marker === 0x21) {
+        const label = bytes[offset++];
+        if (label === 0xf9) {
+          const blockSize = bytes[offset++];
+          if (blockSize !== 4 || offset + 5 > bytes.length) throw new Error("ملف GIF تالف.");
+          transparencyFlag = (bytes[offset] & 1) === 1;
+          offset += blockSize;
+          if (bytes[offset] === 0) offset++;
+        } else {
+          offset = skipBlocks(offset);
+        }
+        continue;
+      }
+      if (marker === 0x2c) {
+        if (frames === 0) firstFrameTransparentFlag = transparencyFlag;
+        frames++;
+        if (offset + 9 > bytes.length) throw new Error("ملف GIF تالف.");
+        const imagePacked = bytes[offset + 8];
+        offset += 9;
+        if (imagePacked & 0x80) offset += 3 * (1 << ((imagePacked & 7) + 1));
+        offset++;
+        offset = skipBlocks(offset);
+        transparencyFlag = false;
+        continue;
+      }
+      throw new Error("ملف GIF غير مدعوم أو تالف.");
+    }
+    if (frames < 2) throw new Error("هذا GIF ثابت؛ ملصقات GIPHY لازم تحتوي على إطارين متحركين على الأقل.");
+    if (!firstFrameTransparentFlag) throw new Error("الـGIF لا يحتوي على شفافية في الإطار الأول. لازم تكون الخلفية شفافة حتى يُصنّف كملصق.");
+    const bitmap = await createImageBitmap(file);
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const scale = Math.min(256 / bitmap.width, 256 / bitmap.height);
+      const width = bitmap.width * scale;
+      const height = bitmap.height * scale;
+      ctx.clearRect(0, 0, 256, 256);
+      ctx.drawImage(bitmap, (256 - width) / 2, (256 - height) / 2, width, height);
+      const pixels = ctx.getImageData(0, 0, 256, 256).data;
+      let transparent = 0;
+      for (let i = 3; i < pixels.length; i += 4) if (pixels[i] < 250) transparent++;
+      const percent = transparent / (256 * 256) * 100;
+      if (percent < 20) throw new Error("الشفافية أقل من 20% في أول إطار. أزل الخلفية قبل النشر على Instagram.");
+    } finally {
+      bitmap.close?.();
+    }
+  }
+
   button.addEventListener("click", async () => {
     if (typeof sb === "undefined" || !sb || typeof user === "undefined" || !user) {
       status.textContent = "سجّل الدخول إلى Stigram أولاً حتى نقدر ننشر باسم حسابك.";
@@ -50,9 +122,11 @@
 
     button.disabled = true;
     resultBox.replaceChildren();
-    status.textContent = "جارٍ رفع GIF إلى تخزين Stigram الآمن...";
+    status.textContent = "جارٍ فحص الحركة والشفافية المطلوبة لملصقات GIPHY...";
     let storagePath = "";
     try {
+      await validateStickerGif(file);
+      status.textContent = "تم التحقق من الحركة والشفافية. جارٍ رفع GIF إلى تخزين Stigram...";
       const filename = safeFileName(file.name || "stigram.gif");
       storagePath = user.id + "/giphy-uploads/" + Date.now() + "-" + filename;
       const upload = await sb.storage.from("stigrams").upload(storagePath, file, {

@@ -9,8 +9,7 @@
   panel.innerHTML = `
     <h3 style="margin:0 0 6px">📲 انشر GIF على إنستغرام عبر GIPHY</h3>
     <p style="margin:0 0 13px;color:var(--muted);font-size:12px;line-height:1.8">
-      ارفع ملف GIF متحرك إلى مكتبة GIPHY، وبعد معالجته يمكن أن يصبح قابلاً للبحث في ملصقات Instagram.
-      يلزم حساب GIPHY وتطبيق معتمد لربط اسم قناة مستقل.
+      ارفع GIF متحركاً بخلفية شفافة إلى GIPHY ليخضع للمراجعة. الظهور في بحث ملصقات Instagram يتطلب قناة Creator أو Brand معتمدة من GIPHY؛ مجرد الرفع لا يضمن ظهوره.
     </p>
     <button type="button" class="btn primary" id="giphyPublishBtn" style="width:100%">🚀 نشر GIF على GIPHY</button>
     <div id="giphyPublishStatus" style="font-size:12px;color:#9ddff0;margin-top:10px;min-height:18px">اختار ملف GIF متحرك من الأعلى أو أنشئ GIF أولاً ثم اضغط «استخدامه للنشر».</div>

@@ -85,3 +85,36 @@ drop policy if exists "sticker comments self insert" on public.sticker_comments;
 create policy "sticker comments self insert" on public.sticker_comments for insert with check(auth.uid()=user_id);
 drop policy if exists "sticker comments self delete" on public.sticker_comments;
 create policy "sticker comments self delete" on public.sticker_comments for delete using(auth.uid()=user_id);
+
+-- Automatically create a public profile whenever a user signs up.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  base_name text;
+begin
+  base_name := lower(regexp_replace(
+    coalesce(new.raw_user_meta_data->>'username', split_part(coalesce(new.email, 'user'), '@', 1)),
+    '[^a-zA-Z0-9_]', '', 'g'
+  ));
+  if char_length(base_name) < 3 then
+    base_name := 'user';
+  end if;
+  insert into public.profiles (id, username, display_name)
+  values (
+    new.id,
+    left(base_name, 15) || '_' || substr(replace(new.id::text, '-', ''), 1, 6),
+    coalesce(new.raw_user_meta_data->>'username', split_part(coalesce(new.email, ''), '@', 1))
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();

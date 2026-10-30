@@ -5,7 +5,8 @@
 - Run `supabase/schema.sql` in SQL Editor.
 - Create a Storage bucket called `stigrams` and make it public for the current public-media flow.
 - Run `supabase/storage-policies.sql`.
-- In `index.html`, find `const CONFIG={SUPABASE_URL:"",SUPABASE_ANON_KEY:""};` and replace the empty strings with your Supabase Project URL and anon/public key. Never put a service_role key in frontend code.
+- In the repository root, open `config.js` and paste your Supabase Project URL into `SUPABASE_URL` and the anon/public key into `SUPABASE_ANON_KEY`. Never put a service_role key in frontend code.
+- The signup trigger in `supabase/schema.sql` automatically creates each user profile. Re-run the updated schema in SQL Editor if you already ran an older version.
 - Enable Email auth in Supabase. Configure the allowed redirect URLs for your deployed domain.
 
 ## 2. Publish the frontend

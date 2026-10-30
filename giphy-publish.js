@@ -15,7 +15,7 @@
     <button type="button" class="btn primary" id="giphyPublishBtn" style="width:100%">🚀 نشر GIF على GIPHY</button>
     <div id="giphyPublishStatus" style="font-size:12px;color:#9ddff0;margin-top:10px;min-height:18px">اختار ملف GIF متحرك من الأعلى أو أنشئ GIF أولاً ثم اضغط «استخدامه للنشر».</div>
     <div id="giphyPublishResult" style="margin-top:8px"></div>
-    <p style="margin:10px 0 0;color:var(--muted);font-size:11px">مفتاح Beta الحالي يسمح بحد أقصى 10 عمليات رفع يومياً ولا يسمح بتعيين اسم قناة GIPHY خاص بكل حساب.</p>
+    <p style="margin:10px 0 0;color:var(--muted);font-size:11px">مفتاح Beta الحالي محدود بـ10 عمليات رفع يومياً ولا يتيح ربط اسم قناة مستقل. يلزم اعتماد قناة GIPHY للظهور في البحث العام.</p>
   `;
   const maker = document.querySelector("#page-create .gif-maker");
   const toolbar = document.querySelector("#page-create .toolbar");

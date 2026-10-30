@@ -58,3 +58,30 @@ create policy "self join group" on public.group_members for insert with check(au
 create policy "self leave group" on public.group_members for delete using(auth.uid()=user_id);
 create policy "group posts visible to members" on public.group_posts for select using(exists(select 1 from public.groups g where g.id=group_id and (g.is_public or exists(select 1 from public.group_members m where m.group_id=g.id and m.user_id=auth.uid()))));
 create policy "group posts author write" on public.group_posts for insert with check(auth.uid()=user_id and exists(select 1 from public.group_members m where m.group_id=group_id and m.user_id=auth.uid()));
+
+-- Sticker-native reactions and discussion layer
+create table if not exists public.sticker_likes (
+ sticker_id uuid references public.stickers(id) on delete cascade,
+ user_id uuid references auth.users(id) on delete cascade,
+ created_at timestamptz not null default now(),
+ primary key(sticker_id,user_id)
+);
+create table if not exists public.sticker_comments (
+ id uuid primary key default gen_random_uuid(),
+ sticker_id uuid not null references public.stickers(id) on delete cascade,
+ user_id uuid not null references auth.users(id) on delete cascade,
+ body text not null check(char_length(body) between 1 and 2000),
+ created_at timestamptz not null default now()
+);
+alter table public.sticker_likes enable row level security;
+alter table public.sticker_comments enable row level security;
+drop policy if exists "sticker likes readable" on public.sticker_likes;
+create policy "sticker likes readable" on public.sticker_likes for select using(true);
+drop policy if exists "sticker likes self manage" on public.sticker_likes;
+create policy "sticker likes self manage" on public.sticker_likes for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+drop policy if exists "sticker comments readable" on public.sticker_comments;
+create policy "sticker comments readable" on public.sticker_comments for select using(true);
+drop policy if exists "sticker comments self insert" on public.sticker_comments;
+create policy "sticker comments self insert" on public.sticker_comments for insert with check(auth.uid()=user_id);
+drop policy if exists "sticker comments self delete" on public.sticker_comments;
+create policy "sticker comments self delete" on public.sticker_comments for delete using(auth.uid()=user_id);

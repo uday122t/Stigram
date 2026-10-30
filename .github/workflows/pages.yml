@@ -24,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Validate JavaScript
-        run: node --check enhancements.js && node --check social.js && node --check giphy.js && node --check gif-maker.js
+        run: node --check enhancements.js && node --check social.js && node --check giphy.js && node --check gif-maker.js && node --check sharing-integrations.js && node --check gif-maker.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:

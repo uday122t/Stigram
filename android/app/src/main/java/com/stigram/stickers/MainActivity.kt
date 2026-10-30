@@ -104,8 +104,12 @@ class MainActivity : Activity() {
                 names.add(filename); bitmap.recycle(); square.recycle()
             }
             if(names.size<3) throw IllegalArgumentException("تعذر قراءة 3 صور صالحة على الأقل")
-            val tray=File(dir,"tray.webp"); val first=BitmapFactory.decodeFile(File(dir,names.first()).absolutePath)
-            FileOutputStream(tray).use { first.compress(Bitmap.CompressFormat.WEBP_LOSSY,85,it) }; first.recycle()
+            val tray=File(dir,"tray.webp")
+            val first=BitmapFactory.decodeFile(File(dir,names.first()).absolutePath)
+                ?: throw IllegalArgumentException("تعذر تجهيز أيقونة الحزمة")
+            val trayBitmap=Bitmap.createScaledBitmap(first,96,96,true)
+            FileOutputStream(tray).use { trayBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY,85,it) }
+            trayBitmap.recycle(); first.recycle()
             if(tray.length()>50*1024) throw IllegalArgumentException("أيقونة الحزمة تجاوزت 50KB")
             store.save(Pack(id,name.take(128),"Stigram", "tray.webp",System.currentTimeMillis().toString(),names))
             Toast.makeText(this,"تم إنشاء الحزمة بنجاح",Toast.LENGTH_LONG).show(); render()

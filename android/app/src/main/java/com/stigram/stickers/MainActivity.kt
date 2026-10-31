@@ -1,7 +1,6 @@
 package com.stigram.stickers
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,116 +8,104 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Button
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URL
 import java.util.UUID
 
 data class Pack(val id:String,val name:String,val publisher:String,val tray:String,val version:String,val files:List<String>)
-class PackStore(private val context: Context) {
-    private val prefs=context.getSharedPreferences("packs",0)
-    fun all():List<Pack> = prefs.getStringSet("ids", emptySet())!!.mapNotNull { id ->
-        val raw=prefs.getString(id,null) ?: return@mapNotNull null
-        val bits=raw.split("|")
-        if(bits.size<5) null else Pack(id,bits[0],bits[1],bits[2],bits[3],bits.drop(4))
-    }
-    fun save(pack:Pack) {
-        val bits=listOf(pack.name,pack.publisher,pack.tray,pack.version)+pack.files
-        prefs.edit().putString(pack.id,bits.joinToString("|")).putStringSet("ids",(prefs.getStringSet("ids",emptySet())?:emptySet())+pack.id).apply()
-    }
+class PackStore(private val context:android.content.Context) {
+ private val prefs=context.getSharedPreferences("packs",0)
+ fun all():List<Pack>=(prefs.getStringSet("ids",emptySet())?:emptySet()).mapNotNull { id ->
+  val raw=prefs.getString(id,null)?:return@mapNotNull null
+  val bits=raw.split("|");if(bits.size<5)null else Pack(id,bits[0],bits[1],bits[2],bits[3],bits.drop(4))
+ }
+ fun save(p:Pack){val bits=listOf(p.name,p.publisher,p.tray,p.version)+p.files;prefs.edit().putString(p.id,bits.joinToString("|")).putStringSet("ids",(prefs.getStringSet("ids",emptySet())?:emptySet())+p.id).apply()}
 }
-class MainActivity : Activity() {
-    private lateinit var root: LinearLayout
-    private lateinit var store: PackStore
-    override fun onCreate(savedInstanceState:Bundle?) { super.onCreate(savedInstanceState); store=PackStore(this); render(); handleIncoming(intent) }
-    override fun onNewIntent(intent:Intent) { super.onNewIntent(intent); setIntent(intent); handleIncoming(intent) }
-    private fun dp(v:Int)= (v*resources.displayMetrics.density).toInt()
-    private fun render() {
-        root=LinearLayout(this).apply { orientation=LinearLayout.VERTICAL; setPadding(dp(20),dp(28),dp(20),dp(20)); setBackgroundColor(0xFFF5F7FB.toInt()) }
-        setContentView(root)
-        root.addView(TextView(this).apply { text="Stigram Stickers"; textSize=28f; setTextColor(0xFF182238.toInt()); gravity=Gravity.CENTER; setPadding(0,0,0,dp(8)) })
-        root.addView(TextView(this).apply { text="حوّل ملصقاتك إلى حزم واتساب"; textSize=15f; gravity=Gravity.CENTER; setTextColor(0xFF596579.toInt()); setPadding(0,0,0,dp(20)) })
-        root.addView(Button(this).apply { text="＋ استيراد صور الملصقات"; setOnClickListener { pick() } })
-        root.addView(Button(this).apply {
-            text="افتح موقع Stigram لصناعة وتعديل الملصقات"
-            setOnClickListener { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://uday122t.github.io/Stigram/"))) }
-        })
-        root.addView(TextView(this).apply { text="حزمك"; textSize=20f; setTextColor(0xFF182238.toInt()); setPadding(0,dp(22),0,dp(8)) })
-        store.all().forEach { pack ->
-            val card=LinearLayout(this).apply { orientation=LinearLayout.VERTICAL; setPadding(dp(14),dp(12),dp(14),dp(12)); setBackgroundColor(0xFFFFFFFF.toInt()) }
-            card.addView(TextView(this).apply { text=pack.name+" · "+pack.files.size+" ملصق"; textSize=17f; setTextColor(0xFF182238.toInt()) })
-            card.addView(Button(this).apply { text="إضافة إلى WhatsApp"; setOnClickListener { addPack(pack) } })
-            root.addView(card,LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT).apply { bottomMargin=dp(10) })
-        }
-        root.addView(TextView(this).apply { text="كل حزمة تحتاج 3 إلى 30 ملصقاً ثابتاً. الصور تتحول إلى WebP بمقاس 512×512."; textSize=12f; setTextColor(0xFF667085.toInt()); setPadding(0,dp(12),0,0) })
-    }
-    private fun pick() {
-        val i=Intent(Intent.ACTION_OPEN_DOCUMENT).apply { type="image/*"; putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true); addCategory(Intent.CATEGORY_OPENABLE) }
-        startActivityForResult(i,44)
-    }
-    @Deprecated("Legacy activity result for broad Android compatibility")
-    override fun onActivityResult(requestCode:Int,resultCode:Int,data:Intent?) { super.onActivityResult(requestCode,resultCode,data); if(requestCode==44&&resultCode==RESULT_OK&&data!=null) importUris(data) }
-    private fun handleIncoming(i:Intent?) {
-        if(i==null)return
-        val shared = when(i.action) {
-            Intent.ACTION_SEND -> listOfNotNull(i.getParcelableExtra<Uri>(Intent.EXTRA_STREAM))
-            Intent.ACTION_SEND_MULTIPLE -> i.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM) ?: emptyList()
-            else -> emptyList()
-        }
-        val fromClip = mutableListOf<Uri>()
-        i.clipData?.let { clip -> for (n in 0 until clip.itemCount) clip.getItemAt(n).uri?.let { fromClip.add(it) } }
-        val uris = (shared + fromClip).distinct()
-        if(uris.isNotEmpty()) importList(uris)
-    }
-    private fun importUris(i:Intent) {
-        val uris=mutableListOf<Uri>(); i.data?.let{uris.add(it)}; i.clipData?.let{clip->for(n in 0 until clip.itemCount)clip.getItemAt(n).uri?.let{uris.add(it)}}
-        importList(uris.distinct())
-    }
-    private fun importList(uris:List<Uri>) {
-        if(uris.isEmpty())return
-        if(uris.size !in 3..30) { Toast.makeText(this,"اختار من 3 إلى 30 صورة للحزمة الواحدة",Toast.LENGTH_LONG).show(); return }
-        val name=EditText(this).apply { hint="اسم الحزمة"; setText("Stigram Pack") }
-        val box=LinearLayout(this).apply { orientation=LinearLayout.VERTICAL; setPadding(dp(24),dp(8),dp(24),dp(8)); addView(name) }
-        android.app.AlertDialog.Builder(this).setTitle("اسم حزمة الملصقات").setView(box).setNegativeButton("إلغاء",null).setPositiveButton("إنشاء") { _,_ -> savePack(uris,name.text.toString().ifBlank{"Stigram Pack"}) }.show()
-    }
-    private fun savePack(uris:List<Uri>,name:String) {
-        try {
-            val id="stigram_"+UUID.randomUUID().toString().replace("-","").take(12)
-            val dir=File(filesDir,"sticker_packs/$id").apply { mkdirs() }
-            val names=mutableListOf<String>()
-            uris.forEachIndexed { index,uri ->
-                val bitmap=contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it) } ?: return@forEachIndexed
-                val square=Bitmap.createBitmap(512,512,Bitmap.Config.ARGB_8888)
-                val c=android.graphics.Canvas(square); val scale=maxOf(512f/bitmap.width,512f/bitmap.height)
-                val w=bitmap.width*scale; val h=bitmap.height*scale
-                val src=android.graphics.Rect(0,0,bitmap.width,bitmap.height); val dst=android.graphics.RectF((512-w)/2,(512-h)/2,(512+w)/2,(512+h)/2)
-                c.drawBitmap(bitmap,src,dst,android.graphics.Paint(3))
-                val filename="sticker_$index.webp"; val file=File(dir,filename)
-                var quality=90
-                do { FileOutputStream(file).use { square.compress(Bitmap.CompressFormat.WEBP_LOSSY,quality,it) }; quality-=10 } while(file.length()>100*1024&&quality>=40)
-                if(file.length()>100*1024) { file.delete(); throw IllegalArgumentException("حجم أحد الملصقات أكبر من 100KB بعد الضغط") }
-                names.add(filename); bitmap.recycle(); square.recycle()
-            }
-            if(names.size<3) throw IllegalArgumentException("تعذر قراءة 3 صور صالحة على الأقل")
-            val tray=File(dir,"tray.webp")
-            val first=BitmapFactory.decodeFile(File(dir,names.first()).absolutePath)
-                ?: throw IllegalArgumentException("تعذر تجهيز أيقونة الحزمة")
-            val trayBitmap=Bitmap.createScaledBitmap(first,96,96,true)
-            FileOutputStream(tray).use { trayBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY,85,it) }
-            trayBitmap.recycle(); first.recycle()
-            if(tray.length()>50*1024) throw IllegalArgumentException("أيقونة الحزمة تجاوزت 50KB")
-            store.save(Pack(id,name.take(128),"Stigram", "tray.webp",System.currentTimeMillis().toString(),names))
-            Toast.makeText(this,"تم إنشاء الحزمة بنجاح",Toast.LENGTH_LONG).show(); render()
-        } catch(e:Exception) { Toast.makeText(this,e.message ?: "تعذر إنشاء الحزمة",Toast.LENGTH_LONG).show() }
-    }
-    private fun addPack(pack:Pack) {
-        val i=Intent("com.whatsapp.intent.action.ENABLE_STICKER_PACK").apply {
-            putExtra("sticker_pack_id",pack.id); putExtra("sticker_pack_authority","com.stigram.stickers.provider"); putExtra("sticker_pack_name",pack.name)
-        }
-        try { startActivityForResult(i,200) } catch(_:Exception) { Toast.makeText(this,"ثبت WhatsApp أولاً ثم أعد المحاولة",Toast.LENGTH_LONG).show() }
-    }
+class MainActivity:Activity(){
+ private lateinit var root:LinearLayout
+ private lateinit var web:WebView
+ private lateinit var store:PackStore
+ private var dark=false
+ private val site="https://uday122t.github.io/Stigram/"
+ override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);store=PackStore(this);dark=getPreferences(0).getBoolean("dark",false);buildShell();handleIncoming(intent)}
+ override fun onNewIntent(i:Intent){super.onNewIntent(i);setIntent(i);handleIncoming(i)}
+ private fun dp(v:Int)=(v*resources.displayMetrics.density).toInt()
+ private fun buildShell(){
+  root=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setBackgroundColor(if(dark)0xFF071A27.toInt() else 0xFFEDF9FC.toInt())}
+  val bar=LinearLayout(this).apply{orientation=LinearLayout.HORIZONTAL;gravity=Gravity.CENTER_VERTICAL;setPadding(dp(16),dp(8),dp(16),dp(8));setBackgroundColor(if(dark)0xFF102C3B.toInt() else 0xFFDFF5F8.toInt())}
+  bar.addView(TextView(this).apply{text="Stigram ✦";textSize=22f;setTypeface(null,1);setTextColor(if(dark)0xFFEAFBFF.toInt() else 0xFF14506A.toInt())},LinearLayout.LayoutParams(0,dp(48),1f))
+  bar.addView(Button(this).apply{text=if(dark)"☀" else "☾";setOnClickListener{dark=!dark;getPreferences(0).edit().putBoolean("dark",dark).apply();setContentView(root);buildShell()}})
+  root.addView(bar)
+  web=WebView(this).apply{settings.javaScriptEnabled=true;settings.domStorageEnabled=true;settings.allowFileAccess=false;settings.allowContentAccess=true;webViewClient=WebViewClient();webChromeClient=WebChromeClient();addJavascriptInterface(StigramNative(),"StigramNative");setBackgroundColor(if(dark)0xFF071A27.toInt() else 0xFFEDF9FC.toInt());loadUrl(site)}
+  root.addView(web,LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,1f));setContentView(root)
+ }
+ inner class StigramNative{
+  @JavascriptInterface fun requestStickerImport(url:String,title:String){runOnUiThread{downloadAndStage(url,title)}}
+  @JavascriptInterface fun openWebsite(){runOnUiThread{web.loadUrl(site)}}
+ }
+ private fun handleIncoming(i:Intent?){
+  if(i==null)return
+  if(i.action==Intent.ACTION_VIEW&&i.data?.scheme=="stigram"&&i.data?.host=="import"){
+   val url=i.data?.getQueryParameter("url");val title=i.data?.getQueryParameter("title")?:"Stigram Sticker"
+   if(!url.isNullOrBlank())downloadAndStage(url,title);return
+  }
+  val uris=mutableListOf<Uri>()
+  if(i.action==Intent.ACTION_SEND)i.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)?.let{uris.add(it)}
+  if(i.action==Intent.ACTION_SEND_MULTIPLE)uris.addAll(i.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)?:emptyList())
+  i.clipData?.let{clip->for(n in 0 until clip.itemCount)clip.getItemAt(n).uri?.let{uris.add(it)}}
+  if(uris.isNotEmpty())importList(uris.distinct())
+ }
+ private fun downloadAndStage(url:String,title:String){
+  Toast.makeText(this,"جارٍ استيراد الملصق...",Toast.LENGTH_SHORT).show()
+  Thread{
+   try{
+    val con=URL(url).openConnection();con.connectTimeout=15000;con.readTimeout=20000
+    val dir=File(filesDir,"pending_stickers").apply{mkdirs()}
+    val file=File(dir,System.currentTimeMillis().toString()+".img")
+    con.getInputStream().use{input->file.outputStream().use{input.copyTo(it)}}
+    val prefs=getSharedPreferences("pending",0);val paths=(prefs.getStringSet("paths",emptySet())?:emptySet()).toMutableSet();paths.add(file.absolutePath);prefs.edit().putStringSet("paths",paths).apply()
+    runOnUiThread{if(paths.size>=3)importList(paths.take(30).map{Uri.fromFile(File(it))})else Toast.makeText(this,"وصل ملصقك («"+title+"»). حزمة واتساب تحتاج "+(3-paths.size)+" ملصقين إضافيين.",Toast.LENGTH_LONG).show()}
+   }catch(e:Exception){runOnUiThread{Toast.makeText(this,"تعذر الاستيراد: "+(e.message?:"خطأ"),Toast.LENGTH_LONG).show()}}
+  }.start()
+ }
+ private fun importList(uris:List<Uri>){if(uris.size !in 3..30){Toast.makeText(this,"حزمة واتساب تحتاج من 3 إلى 30 ملصقاً",Toast.LENGTH_LONG).show();return};savePack(uris,"Stigram Stickers")}
+ private fun savePack(uris:List<Uri>,name:String){
+  try{
+   val id="stigram_"+UUID.randomUUID().toString().replace("-","").take(12);val dir=File(filesDir,"sticker_packs/"+id).apply{mkdirs()};val names=mutableListOf<String>()
+   uris.forEachIndexed{index,uri->
+    val bitmap=contentResolver.openInputStream(uri)?.use{BitmapFactory.decodeStream(it)}?:throw IllegalArgumentException("تعذر قراءة أحد الملصقات")
+    val square=Bitmap.createBitmap(512,512,Bitmap.Config.ARGB_8888);val canvas=android.graphics.Canvas(square);val scale=minOf(512f/bitmap.width,512f/bitmap.height);val w=bitmap.width*scale;val h=bitmap.height*scale
+    canvas.drawBitmap(bitmap,null,android.graphics.RectF((512-w)/2,(512-h)/2,(512+w)/2,(512+h)/2),android.graphics.Paint(3))
+    val filename="sticker_"+index+".webp";val file=File(dir,filename);var quality=90
+    do{FileOutputStream(file).use{square.compress(Bitmap.CompressFormat.WEBP_LOSSY,quality,it)};quality-=10}while(file.length()>100*1024&&quality>=40)
+    if(file.length()>100*1024)throw IllegalArgumentException("حجم الملصق تجاوز 100KB")
+    names.add(filename);bitmap.recycle();square.recycle()
+   }
+   val tray=File(dir,"tray.webp");val first=BitmapFactory.decodeFile(File(dir,names.first()).absolutePath)?:throw IllegalArgumentException("تعذر تجهيز الأيقونة")
+   val trayBitmap=Bitmap.createScaledBitmap(first,96,96,true);FileOutputStream(tray).use{trayBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY,85,it)};trayBitmap.recycle();first.recycle()
+   if(tray.length()>50*1024)throw IllegalArgumentException("أيقونة الحزمة تجاوزت 50KB")
+   store.save(Pack(id,name,"Stigram","tray.webp",System.currentTimeMillis().toString(),names));getSharedPreferences("pending",0).edit().remove("paths").apply()
+   Toast.makeText(this,"تم تجهيز الحزمة، افتحها لإضافتها إلى WhatsApp",Toast.LENGTH_LONG).show();showPacks()
+  }catch(e:Exception){Toast.makeText(this,e.message?:"تعذر إنشاء الحزمة",Toast.LENGTH_LONG).show()}
+ }
+ private fun showPacks(){
+  val box=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setPadding(dp(24),dp(12),dp(24),dp(8))}
+  store.all().forEach{p->box.addView(TextView(this).apply{text=p.name+" · "+p.files.size+" ملصق";textSize=16f});box.addView(Button(this).apply{text="إضافة إلى WhatsApp";setOnClickListener{addPack(p)}})}
+  android.app.AlertDialog.Builder(this).setTitle("حزم Stigram").setView(box).setNegativeButton("إغلاق",null).show()
+ }
+ private fun addPack(p:Pack){
+  val i=Intent("com.whatsapp.intent.action.ENABLE_STICKER_PACK").apply{putExtra("sticker_pack_id",p.id);putExtra("sticker_pack_authority","com.stigram.stickers.provider");putExtra("sticker_pack_name",p.name)}
+  try{startActivityForResult(i,200)}catch(e:Exception){Toast.makeText(this,"ثبت WhatsApp أولاً",Toast.LENGTH_LONG).show()}
+ }
+ @Deprecated("Back navigation")
+ override fun onBackPressed(){if(::web.isInitialized&&web.canGoBack())web.goBack()else super.onBackPressed()}
 }

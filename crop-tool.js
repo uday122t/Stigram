@@ -2,15 +2,15 @@
 (() => {
   "use strict";
   const canvas=document.getElementById("editorCanvas");
-  const toolbar=document.querySelector("#page-create .toolbar");
-  if(!canvas||!toolbar)return;
+  const preview=document.querySelector("#page-create .editor-preview");
+  if(!canvas||!preview)return;
   const ctx=canvas.getContext("2d");
   const style=document.createElement("style");
   style.textContent=".crop-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.crop-tools .active{border-color:#8b7cff!important;background:#8b7cff30!important}.crop-help{font-size:12px;color:var(--muted);margin:5px 0 10px}";
   document.head.appendChild(style);
   const panel=document.createElement("section");
-  panel.innerHTML='<div class="crop-tools"><button type="button" class="btn" id="cropStart">✂️ تحديد منطقة القص</button><button type="button" class="btn" id="cropApply" disabled>اعتماد القص</button><button type="button" class="btn" id="cropCancel" disabled>إلغاء</button></div><div class="crop-help" id="cropHelp">حدد مستطيلاً بإصبعك أو بالماوس فوق المعاينة، ثم اعتمد القص.</div>';
-  toolbar.insertAdjacentElement("afterend",panel);
+  panel.innerHTML='<div class="crop-head"><strong>أداة القص</strong><span>حدد الجزء الذي تريد الاحتفاظ به</span></div><div class="crop-tools"><button type="button" class="btn primary" id="cropStart">✂️ ابدأ القص</button><button type="button" class="btn" id="cropApply" disabled>اعتماد</button><button type="button" class="btn" id="cropCancel" disabled>إلغاء</button></div><div class="crop-help" id="cropHelp">اسحب بإصبعك فوق الصورة لتحديد إطار القص مثل أداة قص الشاشة.</div>';
+  preview.insertAdjacentElement("afterend",panel);
   const $=id=>document.getElementById(id);
   let active=false,dragging=false,start=null,rect=null;
   const point=e=>{const b=canvas.getBoundingClientRect();return{x:Math.max(0,Math.min(canvas.width,(e.clientX-b.left)*canvas.width/b.width)),y:Math.max(0,Math.min(canvas.height,(e.clientY-b.top)*canvas.height/b.height))}};

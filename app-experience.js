@@ -205,6 +205,65 @@
     if (preview) preview.style.backgroundColor = hex;
   }
 
+
+  function applyThemeMenuLanguage() {
+    const english = localStorage.getItem("stigram_language_v1") === "en";
+    const words = english ? {
+      trigger: "◐ Appearance", head: "Appearance & customization",
+      sub: "Choose your Stigram look", live: "● Live",
+      mode: "Interface mode", dark: "Dark", light: "Light", system: "System",
+      palettes: "Color palettes", custom: "Custom color",
+      hue: "Hue", sat: "Saturation", val: "Value / brightness",
+      reset: "Reset", done: "✓ Done", note: "Your choices are saved automatically"
+    } : {
+      trigger: "◐ المظهر", head: "المظهر والتخصيص",
+      sub: "اختار شكل Stigram واحفظه", live: "● مباشر",
+      mode: "نمط الواجهة", dark: "داكن", light: "فاتح", system: "حسب الجهاز",
+      palettes: "لوحات الألوان", custom: "اختيار اللون بدقة",
+      hue: "درجة اللون", sat: "التشبع", val: "القيمة / السطوع",
+      reset: "إعادة ضبط", done: "✓ تم", note: "اختياراتك محفوظة تلقائياً"
+    };
+    const trigger = document.getElementById("appearanceButton");
+    if (trigger) trigger.textContent = words.trigger;
+    const menu = document.getElementById("themeMenu");
+    if (!menu) return;
+    const head = menu.querySelector(".theme-menu-head strong");
+    const sub = menu.querySelector(".theme-menu-head small");
+    const live = menu.querySelector(".theme-live-dot");
+    const strongs = menu.querySelectorAll(":scope > strong");
+    if (head) head.textContent = words.head;
+    if (sub) sub.textContent = words.sub;
+    if (live) live.textContent = words.live;
+    if (strongs[0]) strongs[0].textContent = words.mode;
+    if (strongs[1]) strongs[1].textContent = words.palettes;
+    const modes = menu.querySelectorAll("[data-mode]");
+    if (modes[0]) modes[0].textContent = words.dark;
+    if (modes[1]) modes[1].textContent = words.light;
+    if (modes[2]) modes[2].textContent = words.system;
+    const custom = menu.querySelector(".custom-picker > strong");
+    if (custom) custom.textContent = words.custom;
+    const labels = menu.querySelectorAll(".custom-picker label");
+    if (labels[0]) labels[0].childNodes[0].textContent = words.hue + " ";
+    if (labels[1]) labels[1].childNodes[0].textContent = words.sat + " ";
+    if (labels[2]) labels[2].childNodes[0].textContent = words.val + " ";
+    const reset = menu.querySelector("#resetAppearance");
+    const done = menu.querySelector("#finishThemeCustomization");
+    const note = menu.querySelector("#themeSaveNote");
+    if (reset) reset.textContent = words.reset;
+    if (done) done.textContent = words.done;
+    if (note) note.textContent = words.note;
+    menu.querySelectorAll("[data-palette]").forEach(button => {
+      const key = button.dataset.palette;
+      const englishNames = PALETTE_NAMES;
+      const arabicNames = {
+        midnight: "أزرق منتصف الليل", purple: "سديم بنفسجي", cyan: "سماوي سيبراني",
+        emerald: "زجاج زمردي", rose: "كوارتز وردي", sunset: "غروب",
+        arctic: "قطبي", graphite: "غرافيت", ocean: "محيط", crimson: "قرمزي"
+      };
+      button.lastChild.textContent = english ? englishNames[key] : arabicNames[key];
+    });
+  }
+
   function buildAppearanceMenu() {
     const topbar = document.querySelector(".topbar");
     if (!topbar || document.getElementById("appearanceButton")) return;
@@ -255,8 +314,10 @@
         if (localStorage.getItem(STORAGE_KEY) !== snapshot) {
           throw new Error("Appearance settings verification failed");
         }
+        updateAppearance(false);
         menu.classList.remove("open");
         trigger.setAttribute("aria-expanded", "false");
+        window.location.reload();
       } catch (error) {
         console.error("Could not finish appearance customization:", error);
         const note = menu.querySelector("#themeSaveNote");
@@ -313,6 +374,8 @@
     });
 
     updatePicker(selectedColor());
+    applyThemeMenuLanguage();
+    window.addEventListener("stigram:language", applyThemeMenuLanguage);
 
     document.addEventListener("click", event => {
       if (!menu.contains(event.target) && !trigger.contains(event.target)) {

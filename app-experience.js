@@ -31,18 +31,15 @@
   wrapped.__stigWrapped=true;window.publish=wrapped;
  }
  function installAction(){
-  if(typeof window.card==="function"&&!window.card.__stigWrapped){
-   const original=window.card;
-   const wrapped=function(item){let html=original(item);const id=String(item.id).replace(/'/g,"\\'");const url=String(item.url||"").replace(/'/g,"%27");const title=String(item.title||"ملصق").replace(/'/g,"%27");return html.replace('</div></div></article>','<button class="icon-btn whatsapp-action" type="button" onclick="addStickerToWhatsApp(\''+id+'\')">☘ WhatsApp</button></div></div></article>')};
-   wrapped.__stigWrapped=true;window.card=wrapped;
-  }
-  if(!window.addStickerToWhatsApp)window.addStickerToWhatsApp=function(id){
-   const item=(window.allItems?.()||[]).find(x=>String(x.id)===String(id));if(!item?.url){window.toast?.("هذا الملصق غير متاح للتصدير");return}
-   const payload={url:item.url,title:item.title||"Stigram Sticker"};
-   if(window.StigramNative?.requestStickerImport){window.StigramNative.requestStickerImport(payload.url,payload.title);return}
-   const appLink="intent://import?url="+encodeURIComponent(payload.url)+"&title="+encodeURIComponent(payload.title)+"#Intent;scheme=stigram;package=com.stigram.stickers;S.browser_fallback_url="+encodeURIComponent("https://github.com/uday122t/Stigram/releases")+";end";
-   const fallback=confirm("لإضافة الملصق إلى WhatsApp، ثبّت تطبيق Stigram أولاً. سيتم فتح صفحة التطبيق.");
-   if(fallback)location.href=appLink;
+  window.addStickerToWhatsApp=function(id){
+   const card=document.querySelector('[data-sticker-id="'+CSS.escape(String(id))+'"]');
+   const image=card?.querySelector(".sticker-image img");
+   const title=card?.querySelector(".sticker-info strong")?.textContent||"Stigram Sticker";
+   const url=image?.src;
+   if(!url){window.toast?.("هذا الملصق غير متاح للتصدير");return}
+   if(window.StigramNative?.requestStickerImport){window.StigramNative.requestStickerImport(url,title);return}
+   const appLink="intent://import?url="+encodeURIComponent(url)+"&title="+encodeURIComponent(title)+"#Intent;scheme=stigram;package=com.stigram.stickers;S.browser_fallback_url="+encodeURIComponent("https://github.com/uday122t/Stigram/releases")+";end";
+   if(confirm("لإضافة الملصق إلى WhatsApp، تحتاج تطبيق Stigram. اضغط موافق للانتقال إلى صفحة تنزيل التطبيق."))location.href=appLink;
   };
  }
  apply();

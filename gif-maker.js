@@ -8,15 +8,15 @@
 
   const style = document.createElement("style");
   style.textContent = `
-    .gif-maker{margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(120deg,#171e2d,#1b2440)}
+    .gif-maker{margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
     .gif-maker h3{margin:0 0 5px;font-size:17px}.gif-maker p{margin:0 0 14px;color:var(--muted);font-size:12px}
     .gif-maker .gif-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .gif-maker label{display:grid;gap:6px;color:var(--muted);font-size:12px}
-    .gif-maker select,.gif-maker input{width:100%;padding:10px;border-radius:11px;background:#0e1420;border:1px solid var(--line);color:white}
-    .gif-maker .gif-preview{display:none;margin-top:14px;padding:10px;border-radius:14px;background:#0e1420;text-align:center}
+    .gif-maker select,.gif-maker input{width:100%;padding:10px;border-radius:11px;background:var(--surface-strong);border:1px solid var(--line);color:var(--text)}
+    .gif-maker .gif-preview{display:none;margin-top:14px;padding:10px;border-radius:14px;background:var(--surface-strong);text-align:center}
     .gif-maker .gif-preview img{max-width:100%;max-height:260px;object-fit:contain}
     .gif-maker .gif-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .gif-maker .gif-status{font-size:12px;color:#9ddff0;margin-top:10px;min-height:18px}
+    .gif-maker .gif-status{font-size:12px;color:var(--accent);margin-top:10px;min-height:18px}
     @media(max-width:520px){.gif-maker .gif-controls{grid-template-columns:1fr}}
   `;
   document.head.appendChild(style);

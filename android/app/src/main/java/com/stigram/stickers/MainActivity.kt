@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import org.json.JSONArray
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
@@ -50,8 +51,56 @@ class MainActivity:Activity(){
  }
  inner class StigramNative{
   @JavascriptInterface fun requestStickerImport(url:String,title:String){runOnUiThread{downloadAndStage(url,title)}}
+  @JavascriptInterface fun requestTelegramImport(urlsJson:String,title:String){runOnUiThread{importTelegramUrls(urlsJson,title)}}
   @JavascriptInterface fun openWebsite(){runOnUiThread{web.loadUrl(site)}}
  }
+
+ private fun importTelegramUrls(urlsJson:String,title:String){
+  val urls=try{val array=JSONArray(urlsJson);(0 until array.length()).map{array.getString(it)}.filter{it.startsWith("https://")||it.startsWith("http://")}.take(50)}catch(e:Exception){emptyList()}
+  if(urls.isEmpty()){Toast.makeText(this,"ما في ملصقات صالحة للإرسال",Toast.LENGTH_LONG).show();return}
+  Toast.makeText(this,"جارٍ تجهيز ملصقات Telegram...",Toast.LENGTH_SHORT).show()
+  Thread{
+   try{
+    val id="telegram_"+UUID.randomUUID().toString().replace("-","").take(12)
+    val dir=File(filesDir,"sticker_packs/"+id).apply{mkdirs()}
+    val names=mutableListOf<String>()
+    urls.forEachIndexed{index,url->
+     val connection=URL(url).openConnection().apply{connectTimeout=15000;readTimeout=20000}
+     val bitmap=connection.getInputStream().use{BitmapFactory.decodeStream(it)}?:throw IllegalArgumentException("تعذر قراءة الملصق "+(index+1))
+     val output=Bitmap.createBitmap(512,512,Bitmap.Config.ARGB_8888)
+     val canvas=android.graphics.Canvas(output)
+     val scale=minOf(512f/bitmap.width,512f/bitmap.height)
+     val width=bitmap.width*scale;val height=bitmap.height*scale
+     canvas.drawBitmap(bitmap,null,android.graphics.RectF((512-width)/2,(512-height)/2,(512+width)/2,(512+height)/2),android.graphics.Paint(3))
+     val filename="telegram_"+index+".webp";val file=File(dir,filename)
+     FileOutputStream(file).use{output.compress(Bitmap.CompressFormat.WEBP_LOSSY,90,it)}
+     if(file.length()>512*1024)throw IllegalArgumentException("حجم أحد الملصقات أكبر من 512KB")
+     names.add(filename);bitmap.recycle();output.recycle()
+    }
+    val tray=File(dir,"tray.webp")
+    val first=BitmapFactory.decodeFile(File(dir,names.first()).absolutePath)?:throw IllegalArgumentException("تعذر تجهيز صورة الحزمة")
+    val trayBitmap=Bitmap.createScaledBitmap(first,96,96,true)
+    FileOutputStream(tray).use{trayBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY,85,it)}
+    trayBitmap.recycle();first.recycle()
+    store.save(Pack(id,title.ifBlank{"Stigram Stickers"},"Stigram","tray.webp",System.currentTimeMillis().toString(),names))
+    val uris=ArrayList<Uri>()
+    names.forEach{uris.add(Uri.parse("content://com.stigram.stickers.provider/stickers_asset/"+id+"/"+it))}
+    val emojis=ArrayList<String>();repeat(names.size){emojis.add("✨")}
+    val intent=Intent("org.telegram.messenger.CREATE_STICKER_PACK").apply{
+     type="image/*"
+     putParcelableArrayListExtra(Intent.EXTRA_STREAM,uris)
+     putStringArrayListExtra("STICKER_EMOJIS",emojis)
+     putExtra("IMPORTER",packageName)
+     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    runOnUiThread{
+     try{startActivity(intent);Toast.makeText(this,"تم تجهيز الملصقات — أكمل إنشاء الحزمة داخل Telegram",Toast.LENGTH_LONG).show()}
+     catch(e:Exception){Toast.makeText(this,"ثبت Telegram أو حدّثه حتى يظهر خيار استيراد الملصقات",Toast.LENGTH_LONG).show()}
+    }
+   }catch(e:Exception){runOnUiThread{Toast.makeText(this,e.message?:"تعذر تجهيز ملصقات Telegram",Toast.LENGTH_LONG).show()}}
+  }.start()
+ }
+
  private fun handleIncoming(i:Intent?){
   if(i==null)return
   if(i.action==Intent.ACTION_VIEW&&i.data?.scheme=="stigram"&&i.data?.host=="import"){

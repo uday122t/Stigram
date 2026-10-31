@@ -1,5 +1,5 @@
 /* Stigram glass design system */
-:root{
+:root,:root[data-theme="light"]{
  --bg:#eefaff;--panel:#ffffffc9;--panel2:#e5f8f5;--line:#b9e6ed;--text:#15384a;--muted:#638494;
  --accent:#35b8ed;--accent2:#8cdbb6;--glass:rgba(255,255,255,.58);--shadow:0 18px 48px rgba(39,143,177,.12);
  color-scheme:light

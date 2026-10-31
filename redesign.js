@@ -34,7 +34,7 @@ panel.addEventListener("click",async e=>{
   document.getElementById("page-explore")?.classList.add("active");
   document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page==="explore"));
   const grid=document.getElementById("exploreGrid");
-  if(grid)grid.innerHTML=mapped.length?mapped.map(x=>card(x)).join(""):'<div class="empty">هذا الحساب ما عنده ملصقات عامة لسه</div>';
+  if(grid)grid.innerHTML=mapped.length?mapped.map(x=>card(x)).join(""):'<div class="empty">لا توجد ملصقات عامة لهذا الحساب حتى الآن</div>';
   if(typeof render==="function")render();
  }catch(err){toast("تعذر تحميل الحساب: "+(err.message||"خطأ"))}
 });

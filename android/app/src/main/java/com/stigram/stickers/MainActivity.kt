@@ -11,6 +11,8 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient.FileChooserParams
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
@@ -35,6 +37,8 @@ class MainActivity:Activity(){
  private lateinit var root:LinearLayout
  private lateinit var web:WebView
  private lateinit var store:PackStore
+ private var filePathCallback:ValueCallback<Array<Uri>>?=null
+ private val imagePickerRequest=501
  private var dark=true
  private val site="https://uday122t.github.io/Stigram/"
  override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);store=PackStore(this);dark=getPreferences(0).getBoolean("dark",false);buildShell();handleIncoming(intent)}
@@ -52,7 +56,15 @@ class MainActivity:Activity(){
    settings.allowContentAccess=true
    settings.loadsImagesAutomatically=true
    webViewClient=WebViewClient()
-   webChromeClient=WebChromeClient()
+   webChromeClient=object:WebChromeClient(){
+    override fun onShowFileChooser(view:WebView?,callback:ValueCallback<Array<Uri>>?,params:FileChooserParams?):Boolean{
+     filePathCallback?.onReceiveValue(null)
+     filePathCallback=callback
+     val pick=Intent(Intent.ACTION_GET_CONTENT).apply{addCategory(Intent.CATEGORY_OPENABLE);type="image/*";putExtra(Intent.EXTRA_ALLOW_MULTIPLE,params?.mode==FileChooserParams.MODE_OPEN_MULTIPLE)}
+     startActivityForResult(Intent.createChooser(pick,"اختار صورة من الاستوديو"),imagePickerRequest)
+     return true
+    }
+   }
    addJavascriptInterface(StigramNative(),"StigramNative")
    setBackgroundColor(0xFF070D18.toInt())
    loadUrl(site)

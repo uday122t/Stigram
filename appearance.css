@@ -152,3 +152,17 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 #themeMenu input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
 #themeMenu input[type="color"]::-webkit-color-swatch{border:0;border-radius:8px}
 #themeMenu input[type="color"]::-moz-color-swatch{border:0;border-radius:8px}
+
+/* Accurate custom HSV color controls */
+#themeMenu .custom-picker{display:grid;gap:11px;margin:15px 0;padding:13px;border:1px solid var(--line);border-radius:16px;background:var(--surface-soft)}
+#themeMenu .custom-picker>strong{font-size:13px}
+#themeMenu .custom-picker-preview{display:flex;align-items:center;gap:10px}
+#themeMenu #customColorPreview{width:42px;height:42px;flex:0 0 42px;border-radius:12px;border:1px solid var(--line);box-shadow:inset 0 0 0 1px #ffffff30}
+#themeMenu #customHex{width:112px;direction:ltr;text-align:center;font:600 13px ui-monospace,monospace;padding:9px;border-radius:10px}
+#themeMenu .custom-picker label{display:grid;gap:7px;font-size:12px;color:var(--muted)}
+#themeMenu input.color-range{width:100%;height:13px;padding:0;border:0!important;border-radius:99px;appearance:none;-webkit-appearance:none;cursor:pointer}
+#themeMenu input.color-range::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:19px;height:19px;border-radius:50%;background:#fff;border:2px solid #263445;box-shadow:0 1px 5px #0005}
+#themeMenu input.color-range::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #263445;box-shadow:0 1px 5px #0005}
+#themeMenu .hue-range{background:linear-gradient(90deg,#f00 0%,#ff0 16.6%,#0f0 33.3%,#0ff 50%,#00f 66.6%,#f0f 83.3%,#f00 100%)!important}
+#themeMenu .sat-range{background:linear-gradient(90deg,#fff,var(--picker-hue))!important}
+#themeMenu .val-range{background:linear-gradient(90deg,#000,var(--picker-full))!important}

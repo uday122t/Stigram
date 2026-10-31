@@ -14,7 +14,7 @@
  function apply(){
   root.dataset.theme=effectiveTheme();root.dataset.appearance=prefs.theme;root.dataset.palette=prefs.palette;
   const colors=palettes[prefs.palette]||palettes.midnight;
-  root.style.setProperty("--accent",prefs.accent||colors[0]);root.style.setProperty("--accent2",colors[1]);
+  root.style.setProperty("--accent",prefs.accent||colors[0],"important");root.style.setProperty("--accent2",colors[1],"important");
   try{localStorage.setItem(key,JSON.stringify(prefs))}catch(_){}
   refresh();
  }

@@ -4,7 +4,8 @@
  const defaults={theme:"dark",palette:"sky",firstCreated:false};
  let prefs={...defaults};
  try{prefs={...defaults,...JSON.parse(localStorage.getItem(key)||"{}")}}catch(_){}
- prefs.theme="dark";\n try{if(JSON.parse(localStorage.getItem("stigram_items")||"[]").length)prefs.firstCreated=true}catch(_){}
+ prefs.theme="dark";
+ try{if(JSON.parse(localStorage.getItem("stigram_items")||"[]").length)prefs.firstCreated=true}catch(_){}
  function apply(){root.dataset.theme=prefs.theme;root.dataset.palette=prefs.palette;localStorage.setItem(key,JSON.stringify(prefs))}
  function addThemeUI(){
   if(document.getElementById("themeMenu"))return;

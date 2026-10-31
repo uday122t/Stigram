@@ -221,7 +221,7 @@
       mode: "نمط الواجهة", dark: "داكن", light: "فاتح", system: "حسب الجهاز",
       palettes: "لوحات الألوان", custom: "اختيار اللون بدقة",
       hue: "درجة اللون", sat: "التشبع", val: "القيمة / السطوع",
-      reset: "إعادة ضبط", done: "✓ تم", note: "اختياراتك محفوظة تلقائياً"
+      reset: "إعادة ضبط", note: "اختياراتك محفوظة تلقائياً"
     };
     const trigger = document.getElementById("appearanceButton");
     if (trigger) trigger.textContent = words.trigger;
@@ -247,10 +247,8 @@
     if (labels[1]) labels[1].childNodes[0].textContent = words.sat + " ";
     if (labels[2]) labels[2].childNodes[0].textContent = words.val + " ";
     const reset = menu.querySelector("#resetAppearance");
-    const done = menu.querySelector("#finishThemeCustomization");
     const note = menu.querySelector("#themeSaveNote");
     if (reset) reset.textContent = words.reset;
-    if (done) done.textContent = words.done;
     if (note) note.textContent = words.note;
     menu.querySelectorAll("[data-palette]").forEach(button => {
       const key = button.dataset.palette;
@@ -296,34 +294,11 @@
         '<label>القيمة / السطوع <input id="customVal" class="color-range val-range" type="range" min="0" max="100" value="100"></label>' +
       '</div>' +
       '<div class="theme-footer"><button type="button" class="theme-choice" id="resetAppearance">إعادة ضبط</button>' +
-      '<button type="button" class="btn primary" id="finishThemeCustomization"><span aria-hidden="true">✓</span> تم</button></div>' +
+      '</div>' +
       '<p class="theme-save-note" id="themeSaveNote">اختياراتك محفوظة تلقائياً</p>';
 
     topbar.appendChild(trigger);
     document.body.appendChild(menu);
-
-    const finishButton = menu.querySelector("#finishThemeCustomization");
-    finishButton.addEventListener("click", () => {
-      try {
-        const snapshot = JSON.stringify({
-          theme: settings.theme,
-          palette: settings.palette,
-          accent: settings.accent
-        });
-        localStorage.setItem(STORAGE_KEY, snapshot);
-        if (localStorage.getItem(STORAGE_KEY) !== snapshot) {
-          throw new Error("Appearance settings verification failed");
-        }
-        updateAppearance(false);
-        menu.classList.remove("open");
-        trigger.setAttribute("aria-expanded", "false");
-        window.location.reload();
-      } catch (error) {
-        console.error("Could not finish appearance customization:", error);
-        const note = menu.querySelector("#themeSaveNote");
-        if (note) note.textContent = "تعذر تثبيت المظهر — حاول مرة ثانية";
-      }
-    });
 
     trigger.setAttribute("aria-controls", "themeMenu");
     trigger.setAttribute("aria-expanded", "false");

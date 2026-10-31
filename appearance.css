@@ -152,3 +152,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
  .appearance-trigger{padding:8px 10px;font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+
+/* Compact language switch */
+.lang-switch{width:36px;height:36px;min-width:36px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--text);font:800 13px/1 inherit;cursor:pointer;flex-shrink:0;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.lang-switch:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:700px){.topbar #langTop{display:inline-flex}}

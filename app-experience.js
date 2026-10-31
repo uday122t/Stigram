@@ -42,6 +42,15 @@
    const appLink="intent://import?url="+encodeURIComponent(url)+"&title="+encodeURIComponent(title)+"#Intent;scheme=stigram;package=com.stigram.stickers;S.browser_fallback_url="+encodeURIComponent("https://github.com/uday122t/Stigram/actions/runs/41150277319")+";end";
    location.href=appLink;
   };
+  window.addStickerToTelegram=function(id){
+   const card=document.querySelector('[data-sticker-id="'+CSS.escape(String(id))+'"]');
+   const image=card?.querySelector(".sticker-image img");
+   const title=card?.querySelector(".sticker-info strong")?.textContent||"Stigram Sticker";
+   const url=image?.src;
+   if(!url){window.toast?.("هذا الملصق غير متاح للتصدير");return}
+   if(window.StigramNative?.requestTelegramImport){window.StigramNative.requestTelegramImport(JSON.stringify([url]),title);return}
+   window.toast?.("استيراد الملصقات كحزمة Telegram يحتاج تطبيق Stigram للأندرويد");
+  };
  }
  apply();
  const boot=()=>{addThemeUI();addCreateGuide();refresh();wrapPublish();installAction()};

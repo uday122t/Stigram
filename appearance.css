@@ -166,3 +166,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 #themeMenu .hue-range{background:linear-gradient(90deg,#f00 0%,#ff0 16.6%,#0f0 33.3%,#0ff 50%,#00f 66.6%,#f0f 83.3%,#f00 100%)!important}
 #themeMenu .sat-range{background:linear-gradient(90deg,#fff,var(--picker-hue))!important}
 #themeMenu .val-range{background:linear-gradient(90deg,#000,var(--picker-full))!important}
+
+
+/* RTL-safe color controls: keep min on the left and max on the right */
+#themeMenu input.color-range{direction:ltr!important;unicode-bidi:isolate;}
+#themeMenu input.color-range::-webkit-slider-runnable-track{direction:ltr}
+#themeMenu input.color-range::-moz-range-track{direction:ltr}

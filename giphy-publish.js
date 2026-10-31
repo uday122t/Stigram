@@ -12,7 +12,7 @@
       ارفع GIF متحركاً بخلفية شفافة إلى GIPHY ليخضع للمراجعة. الظهور في بحث ملصقات Instagram يتطلب قناة Creator أو Brand معتمدة من GIPHY؛ مجرد الرفع لا يضمن ظهوره.
     </p>
     <button type="button" class="btn primary" id="giphyPublishBtn" style="width:100%">🚀 نشر GIF على GIPHY</button>
-    <div id="giphyPublishStatus" style="font-size:12px;color:var(--accent);margin-top:10px;min-height:18px">اختار ملف GIF متحرك من الأعلى أو أنشئ GIF أولاً ثم اضغط «استخدامه للنشر».</div>
+    <div id="giphyPublishStatus" style="font-size:12px;color:var(--accent);margin-top:10px;min-height:18px">اختر ملف GIF متحركاً من الأعلى، أو أنشئ ملفاً جديداً، ثم اضغط «استخدامه للنشر».</div>
     <div id="giphyPublishResult" style="margin-top:8px"></div>
     <p style="margin:10px 0 0;color:var(--muted);font-size:11px">مفتاح Beta الحالي محدود بـ10 عمليات رفع يومياً ولا يتيح ربط اسم قناة مستقل. يلزم اعتماد قناة GIPHY للظهور في البحث العام.</p>
   `;
@@ -106,7 +106,7 @@
     }
     const file = input.files?.[0];
     if (!file) {
-      status.textContent = "اختار GIF من خانة اختيار الصورة، أو أنشئ GIF واضغط «استخدامه للنشر».";
+      status.textContent = "اختر ملف GIF من حقل اختيار الصورة، أو أنشئ ملفاً جديداً، ثم اضغط «استخدامه للنشر».";
       return;
     }
     if (file.size > 50 * 1024 * 1024) {

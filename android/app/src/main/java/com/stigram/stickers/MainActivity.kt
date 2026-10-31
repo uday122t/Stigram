@@ -198,8 +198,8 @@ class MainActivity:Activity(){
    val tray=File(dir,"tray.webp");val first=BitmapFactory.decodeFile(File(dir,names.first()).absolutePath)?:throw IllegalArgumentException("تعذر تجهيز الأيقونة")
    val trayBitmap=Bitmap.createScaledBitmap(first,96,96,true);FileOutputStream(tray).use{trayBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY,85,it)};trayBitmap.recycle();first.recycle()
    if(tray.length()>50*1024)throw IllegalArgumentException("أيقونة الحزمة تجاوزت 50KB")
-   store.save(Pack(id,name,"Stigram","tray.webp",System.currentTimeMillis().toString(),names));getSharedPreferences("pending",0).edit().remove("paths").apply()
-   Toast.makeText(this,"تم تجهيز الحزمة، افتحها لإضافتها إلى WhatsApp",Toast.LENGTH_LONG).show();showPacks()
+   val pack=Pack(id,name,"Stigram","tray.webp",System.currentTimeMillis().toString(),names);store.save(pack);getSharedPreferences("pending",0).edit().remove("paths").apply()
+   Toast.makeText(this,"تم تجهيز الحزمة — جاري فتح WhatsApp لإضافتها",Toast.LENGTH_LONG).show();addPack(pack)
   }catch(e:Exception){Toast.makeText(this,e.message?:"تعذر إنشاء الحزمة",Toast.LENGTH_LONG).show()}
  }
  private fun showPacks(){

@@ -169,3 +169,28 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
  .nav button[data-page="profile"],.side-bottom{display:none!important;}
  .sidebar{min-height:0;}
 }
+
+/* Mobile bottom bar: one clean horizontal row, no brand block */
+@media(max-width:700px){
+ .sidebar{
+   padding:5px 7px calc(5px + env(safe-area-inset-bottom));
+   min-height:0;
+ }
+ .sidebar > .logo,.side-bottom{display:none!important;}
+ .nav{
+   display:flex;flex-direction:row;align-items:center;justify-content:space-between;
+   gap:2px;width:100%;white-space:nowrap;
+ }
+ .nav button{
+   flex:1 1 0;min-width:0;width:25%;min-height:46px;padding:7px 2px;
+   display:flex;flex-direction:row;justify-content:center;align-items:center;
+   gap:4px;border-radius:13px;font-size:10px;line-height:1;
+   white-space:nowrap;overflow:hidden;
+ }
+ .nav button span:not(.ico){
+   display:inline-block;max-width:calc(100% - 20px);overflow:hidden;
+   text-overflow:ellipsis;white-space:nowrap;font-size:9px;line-height:1;
+ }
+ .nav .ico{flex:0 0 auto;width:auto;font-size:16px;line-height:1;}
+ .nav button[data-page="profile"]{display:none!important;}
+}

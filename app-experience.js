@@ -38,7 +38,7 @@
    const url=image?.src;
    if(!url){window.toast?.("هذا الملصق غير متاح للتصدير");return}
    if(window.StigramNative?.requestStickerImport){window.StigramNative.requestStickerImport(url,title);return}
-   const appLink="intent://import?url="+encodeURIComponent(url)+"&title="+encodeURIComponent(title)+"#Intent;scheme=stigram;package=com.stigram.stickers;S.browser_fallback_url="+encodeURIComponent("https://github.com/uday122t/Stigram/actions/workflows/android-build.yml")+";end";
+   const appLink="intent://import?url="+encodeURIComponent(url)+"&title="+encodeURIComponent(title)+"#Intent;scheme=stigram;package=com.stigram.stickers;S.browser_fallback_url="+encodeURIComponent("https://github.com/uday122t/Stigram/actions")+";end";
    location.href=appLink;
   };
  }

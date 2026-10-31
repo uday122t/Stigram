@@ -4,22 +4,13 @@
  const defaults={theme:"dark",palette:"sky",firstCreated:false};
  let prefs={...defaults};
  try{prefs={...defaults,...JSON.parse(localStorage.getItem(key)||"{}")}}catch(_){}
- prefs.theme="dark";
+ prefs.theme="dark";prefs.palette="sky";
  try{if(JSON.parse(localStorage.getItem("stigram_items")||"[]").length)prefs.firstCreated=true}catch(_){}
  function apply(){root.dataset.theme=prefs.theme;root.dataset.palette=prefs.palette;localStorage.setItem(key,JSON.stringify(prefs))}
- function addThemeUI(){
-  if(document.getElementById("themeMenu"))return;
-  const top=document.querySelector(".topbar");if(!top)return;
-  const trigger=document.createElement("button");trigger.className="btn";trigger.id="themeTrigger";trigger.type="button";trigger.textContent="◐ المظهر";
-  top.insertBefore(trigger,top.lastElementChild);
-  const menu=document.createElement("section");menu.id="themeMenu";menu.innerHTML='<strong>تخصيص Stigram</strong><p style="font-size:12px;color:var(--muted);margin:5px 0">اختار الثيم واللون المناسب إلك</p><div class="theme-row"><button class="theme-choice" data-theme-choice="light">☀️ فاتح</button><button class="theme-choice" data-theme-choice="dark">🌙 داكن</button></div><div class="theme-row"><button class="theme-choice" data-palette-choice="sky"><i class="theme-dot" style="background:#35b8ed"></i>سماوي</button><button class="theme-choice" data-palette-choice="mint"><i class="theme-dot" style="background:#36c6c0"></i>نعناعي</button><button class="theme-choice" data-palette-choice="violet"><i class="theme-dot" style="background:#8b91ff"></i>ليلكي</button></div>';
-  document.body.append(menu);
-  trigger.onclick=()=>menu.classList.toggle("open");
-  menu.onclick=e=>{const t=e.target.closest("[data-theme-choice]"),p=e.target.closest("[data-palette-choice]");if(t)prefs.theme=t.dataset.themeChoice;if(p)prefs.palette=p.dataset.paletteChoice;apply();refresh()};
-  document.addEventListener("click",e=>{if(!menu.contains(e.target)&&e.target!==trigger)menu.classList.remove("open")});
- }
+ function addThemeUI(){document.getElementById("themeTrigger")?.remove();document.getElementById("themeMenu")?.remove();}
  function refresh(){document.querySelectorAll("[data-theme-choice]").forEach(x=>x.classList.toggle("active",x.dataset.themeChoice===prefs.theme));document.querySelectorAll("[data-palette-choice]").forEach(x=>x.classList.toggle("active",x.dataset.paletteChoice===prefs.palette))}
- function addCreateGuide(){
+ function addCreateGuide(){document.getElementById("firstCreateGuide")?.remove();return;
+
   const page=document.getElementById("page-create");if(!page||document.getElementById("firstCreateGuide"))return;
   const guide=document.createElement("div");guide.id="firstCreateGuide";guide.innerHTML='<h3>✨ أول ستيكر إلك يبدأ من هان</h3><p>ارفع صورة، قصّها وعدّلها، وبعدها احفظها في مجموعتك وشاركها مع العالم.</p><button class="btn primary" id="guideStart">ابدأ الآن</button>';
   page.insertBefore(guide,page.children[1]||null);

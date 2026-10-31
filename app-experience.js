@@ -22,9 +22,10 @@
   if(!["dark","light","system"].includes(prefs.theme))prefs.theme="dark";
   if(!validHex(prefs.accent))prefs.accent="";
   root.dataset.theme=effectiveTheme();root.dataset.appearance=prefs.theme;root.dataset.palette=prefs.palette;
-  const colors=palettes[prefs.palette],primary=prefs.accent||colors[0];
+  const colors=prefs.palette==="custom"&&validHex(prefs.accent)?[prefs.accent,lighter(prefs.accent)]:palettes[prefs.palette];
+  const primary=prefs.accent||colors[0];
   root.style.setProperty("--accent",primary,"important");
-  root.style.setProperty("--accent2",prefs.accent?lighter(primary):colors[1],"important");
+  root.style.setProperty("--accent2",prefs.palette==="custom"?lighter(primary):colors[1],"important");
   refresh();
  }
  function addThemeUI(){
@@ -44,7 +45,7 @@
    const palette=e.target.closest("[data-palette]");if(palette){prefs.palette=palette.dataset.palette;prefs.accent="";apply()}
    if(e.target.id==="resetAppearance"){prefs={...defaults};apply()}
    if(e.target.id==="saveAppearance"||e.target.closest("#saveAppearance")){
-    try{localStorage.setItem(key,JSON.stringify(prefs));const note=document.getElementById("themeSaveNote");if(note)note.textContent="تم حفظ الثيم — جاري تطبيقه";location.reload()}
+    try{localStorage.setItem(key,JSON.stringify(prefs));apply();const note=document.getElementById("themeSaveNote");if(note)note.textContent="تم حفظ الثيم وتطبيقه بنجاح ✓"}
     catch(_){const note=document.getElementById("themeSaveNote");if(note)note.textContent="تعذر الحفظ — تحقق من مساحة التخزين"}
    }
   });
@@ -53,9 +54,8 @@
    const chosen=e.currentTarget.value.toLowerCase();
    if(!validHex(chosen))return;
    prefs.accent=chosen;
-   root.style.setProperty("--accent",chosen,"important");
-   root.style.setProperty("--accent2",lighter(chosen),"important");
-   root.dataset.palette="custom";
+   prefs.palette="custom";
+   apply();
    menu.querySelectorAll("[data-palette]").forEach(x=>x.classList.remove("active"));
   };
   customPicker.addEventListener("input",updateCustomColor);
@@ -65,7 +65,7 @@
  function refresh(){
   document.querySelectorAll("#themeMenu [data-mode]").forEach(x=>x.classList.toggle("active",x.dataset.mode===prefs.theme));
   document.querySelectorAll("#themeMenu [data-palette]").forEach(x=>x.classList.toggle("active",x.dataset.palette===prefs.palette));
-  const color=document.getElementById("customAccent");if(color)color.value=validHex(prefs.accent)?prefs.accent:palettes[prefs.palette||"midnight"][0];
+  const color=document.getElementById("customAccent");if(color)color.value=validHex(prefs.accent)?prefs.accent:(palettes[prefs.palette]||palettes.midnight)[0];
  }
  function installActions(){
   function openPackBuilder(id,platform){

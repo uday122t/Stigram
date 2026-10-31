@@ -41,3 +41,39 @@ body{background:radial-gradient(ellipse at 85% 0%,#c9f1ff80,transparent 36%),rad
  .main{padding-bottom:105px}.profile-cover{height:130px;border-radius:22px;margin-bottom:-35px}.profile-head{margin:0 7px 18px;padding:18px 14px!important;gap:12px}.profile-head .avatar{width:66px;height:66px;border-radius:21px}.profile-head h2{font-size:18px}.profile-head .statrow{font-size:11px}.profile-head #authOpen2{padding:8px 10px;font-size:11px}.search-results{top:110px;right:0;left:0}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+
+/* Deep midnight glass theme — default */
+:root{color-scheme:dark;--bg:#070d18;--panel:#111c2d;--line:#26384d;--text:#edf6ff;--muted:#8da4ba;--accent:#55c8ff;--accent2:#72e0b1}
+html,body{background:#070d18!important;color:#edf6ff!important}
+body{background:radial-gradient(ellipse at 82% -8%,#17466a66,transparent 38%),radial-gradient(ellipse at 0% 65%,#123b3560,transparent 34%),linear-gradient(145deg,#070d18,#0b1422 58%,#08131d)!important}
+.sidebar{background:rgba(13,25,42,.86)!important;border:1px solid #26394e!important;box-shadow:0 22px 70px #0008!important}
+.logo{color:#f0f8ff}.logo b{color:#58caff!important}
+.nav button{color:#8ea6bb!important}.nav button.active,.nav button:hover{background:linear-gradient(120deg,#173c56,#153d39)!important;color:#e9f8ff!important}
+.search input{background:rgba(17,30,48,.9)!important;border:1px solid #2a4057!important;color:#eff8ff!important;box-shadow:0 12px 30px #0003!important}
+.search input::placeholder{color:#718ba2!important}.search:before{color:#64c9f1!important}
+.app-download{background:linear-gradient(120deg,#122c43,#14352f)!important;border:1px solid #2a5262!important;color:#dff7ff!important;box-shadow:0 10px 28px #0004!important}
+.app-download:before{background:#1b3d50!important;color:#70d5ff!important}.app-download small{color:#91b6c2!important}
+.section-head h2{color:#eff8ff!important}.section-kicker{color:#829db3!important}
+.chip{background:#101e30!important;border:1px solid #2a4055!important;color:#91a8bb!important}
+.chip.active{background:#153a50!important;color:#bceeff!important;border-color:#3b9ac0!important}
+.sticker-card{background:linear-gradient(155deg,rgba(20,34,53,.98),rgba(12,24,39,.98))!important;border:1px solid #26394e!important;box-shadow:0 15px 40px #0005!important}
+.sticker-card:hover{border-color:#3985a4!important;box-shadow:0 22px 48px #0007!important}
+.sticker-image{background:radial-gradient(circle at 50% 35%,#1d3c50,#111d2d 72%)!important}
+.sticker-info strong{color:#e7f5ff!important}.sticker-info span{color:#8ba4b8!important}
+.icon-btn{background:#18283b!important;border-color:#2b4055!important;color:#a6c3d5!important}
+.whatsapp-action{background:#123b31!important;color:#8df0bd!important}
+.empty{background:#101d2d!important;border:1px dashed #30475c!important;color:#91aabd!important}
+.profile-cover{background:linear-gradient(115deg,#123c59,#16463f 58%,#26365e)!important;color:#a7dff1!important}
+.profile-cover-orb{background:#8bdcff18!important;box-shadow:130px 80px 0 15px #9fffd018,-180px 120px 0 -35px #b7e8ff16!important}
+.profile-head{background:rgba(15,28,45,.96)!important;border:1px solid #2a4055!important;box-shadow:0 18px 45px #0006!important}
+.profile-head .avatar{border-color:#1a2b40!important;box-shadow:0 5px 22px #0008!important}
+.profile-head h2{color:#edf7ff!important}
+#gifIdentity{background:#101e30!important;border:1px solid #2b4055!important}
+.search-results{background:rgba(13,25,42,.98)!important;border:1px solid #2b4055!important;box-shadow:0 24px 65px #0009!important}
+.search-result{color:#e5f5ff!important}.search-result:hover{background:#1a3044!important}
+.search-result .result-avatar{background:#173d3a!important;color:#8ee4c1!important}.search-result small{color:#8ca7bb!important}
+.create-fab{background:linear-gradient(145deg,#36bdf4,#4bcf9b)!important;border:3px solid #0b1725!important;box-shadow:0 12px 35px #159ecb55,0 0 0 6px #17283b!important;color:#041725!important}
+.page .modal{background:#101d2d!important;border:1px solid #2b4055!important;color:#eaf6ff!important}
+button,.btn{color:inherit}
+@media(max-width:700px){.sidebar{background:rgba(10,20,34,.96)!important;border-color:#2a4055!important;box-shadow:0 12px 40px #0009!important}.create-fab{border-color:#0b1725!important}}

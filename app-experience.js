@@ -39,7 +39,7 @@
    if(!url){window.toast?.("هذا الملصق غير متاح للتصدير");return}
    if(window.StigramNative?.requestStickerImport){window.StigramNative.requestStickerImport(url,title);return}
    const appLink="intent://import?url="+encodeURIComponent(url)+"&title="+encodeURIComponent(title)+"#Intent;scheme=stigram;package=com.stigram.stickers;S.browser_fallback_url="+encodeURIComponent("https://github.com/uday122t/Stigram/releases")+";end";
-   if(confirm("لإضافة الملصق إلى WhatsApp، تحتاج تطبيق Stigram. اضغط موافق للانتقال إلى صفحة تنزيل التطبيق."))location.href=appLink;
+   location.href=appLink;
   };
  }
  apply();

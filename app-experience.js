@@ -237,8 +237,8 @@
         '<label>القيمة / السطوع <input id="customVal" class="color-range val-range" type="range" min="0" max="100" value="100"></label>' +
       '</div>' +
       '<div class="theme-footer"><button type="button" class="theme-choice" id="resetAppearance">إعادة ضبط</button>' +
-      '<button type="button" class="btn primary" id="saveAppearance">حفظ وتطبيق ✓</button></div>' +
-      '<p class="theme-save-note" id="themeSaveNote">كل تعديل يتم حفظه تلقائياً، وزر الحفظ يؤكد تثبيته</p>';
+      '<button type="button" class="btn primary" id="saveAppearance">Save</button></div>' +
+      '<p class="theme-save-note" id="themeSaveNote">احفظ اختيارك للخروج من التخصيص</p>';
 
     topbar.appendChild(trigger);
     document.body.appendChild(menu);
@@ -278,23 +278,12 @@
       if (event.target.closest("#saveAppearance")) {
         const saved = saveSettings();
         const note = document.getElementById("themeSaveNote");
-        if (note) {
-          note.textContent = saved
-            ? "تم حفظ إعداداتك الحالية وتطبيقها ✓"
-            : "تعذر الحفظ في مساحة التخزين";
+        if (!saved) {
+          if (note) note.textContent = "تعذر الحفظ — حاول مرة ثانية";
+          return;
         }
-        if (saved) {
-          ROOT.dataset.theme = resolvedTheme();
-          ROOT.dataset.appearance = settings.theme;
-          ROOT.dataset.palette = settings.palette;
-          const palette = PALETTES[settings.palette] || PALETTES.midnight;
-          const primary = settings.palette === "custom" ? settings.accent : (settings.accent || palette[0]);
-          ROOT.style.setProperty("--accent", primary, "important");
-          ROOT.style.setProperty("--accent2", settings.palette === "custom" ? lighten(primary) : palette[1], "important");
-          refreshAppearanceControls(true);
-          menu.classList.remove("open");
-          trigger.setAttribute("aria-expanded", "false");
-        }
+        menu.classList.remove("open");
+        trigger.setAttribute("aria-expanded", "false");
       }
     });
 

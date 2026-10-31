@@ -41,20 +41,25 @@
   const color=document.getElementById("customAccent");if(color&&prefs.accent)color.value=prefs.accent;
  }
  function installActions(){
-  window.addStickerToWhatsApp=function(id){
-   const card=document.querySelector('[data-sticker-id="'+CSS.escape(String(id))+'"]');
-   const image=card?.querySelector(".sticker-image img");const title=card?.querySelector(".sticker-info strong")?.textContent||"Stigram Sticker";
-   if(!image?.src){window.toast?.("الملصق غير متاح");return}
-   if(window.StigramNative?.requestWhatsAppPack){window.StigramNative.requestWhatsAppPack(JSON.stringify([image.src]),title);return}
-   window.toast?.("لإنشاء حزمة WhatsApp اختر 3 ملصقات من ملفك داخل تطبيق Stigram");
-  };
-  window.addStickerToTelegram=function(id){
-   const card=document.querySelector('[data-sticker-id="'+CSS.escape(String(id))+'"]');
-   const image=card?.querySelector(".sticker-image img");const title=card?.querySelector(".sticker-info strong")?.textContent||"Stigram Sticker";
-   if(!image?.src){window.toast?.("الملصق غير متاح");return}
-   if(window.StigramNative?.requestTelegramImport){window.StigramNative.requestTelegramImport(JSON.stringify([image.src]),title);return}
-   window.toast?.("استيراد Telegram يحتاج تطبيق Stigram على Android");
-  };
+  function openPackBuilder(id,platform){
+   const nav=document.querySelector('[data-page="profile"]');
+   if(nav)nav.click();
+   setTimeout(()=>{
+    const panel=document.getElementById("androidPackPanel");
+    if(!panel){window.toast?.("افتح ملفك الشخصي بعد تسجيل الدخول لتجهيز الحزمة");return}
+    panel.scrollIntoView({behavior:"smooth",block:"start"});
+    const checkbox=panel.querySelector('input[data-sticker-id="'+CSS.escape(String(id))+'"]');
+    if(!checkbox){window.toast?.("هذا الملصق غير موجود ضمن ملصقات حسابك");return}
+    if(!checkbox.checked){checkbox.checked=true;checkbox.dispatchEvent(new Event("change",{bubbles:true}))}
+    if(platform==="telegram"){
+     setTimeout(()=>document.getElementById("sendTelegramPack")?.click(),120);
+    }else{
+     window.toast?.("تم تحديد الملصق — اختار ملصقين إضافيين على الأقل ثم اضغط إضافة إلى WhatsApp");
+    }
+   },260);
+  }
+  window.addStickerToWhatsApp=id=>openPackBuilder(id,"whatsapp");
+  window.addStickerToTelegram=id=>openPackBuilder(id,"telegram");
  }
  function boot(){addThemeUI();installActions();document.getElementById("firstCreateGuide")?.remove()}
  apply();boot();window.addEventListener("load",boot);

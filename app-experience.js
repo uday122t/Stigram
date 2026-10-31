@@ -40,7 +40,7 @@
  function applyPicker(){
   const h=+document.getElementById("customHue").value,s=+document.getElementById("customSat").value,v=+document.getElementById("customVal").value;
   const chosen=hsvToHex(h,s,v);prefs.accent=chosen;prefs.palette="custom";apply();updatePickerFromHex(chosen);
-  menu.querySelectorAll("[data-palette]").forEach(x=>x.classList.remove("active"));
+  document.getElementById("themeMenu").querySelectorAll("[data-palette]").forEach(x=>x.classList.remove("active"));
  }
  function apply(){
   if(!palettes[prefs.palette]&&prefs.palette!=="custom")prefs.palette="midnight";

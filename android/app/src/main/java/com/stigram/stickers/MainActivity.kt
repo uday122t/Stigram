@@ -74,7 +74,41 @@ class MainActivity:Activity(){
  }
  inner class StigramNative{
   @JavascriptInterface fun requestStickerImport(url:String,title:String){runOnUiThread{downloadAndStage(url,title)}}
+  @JavascriptInterface fun requestWhatsAppPack(urlsJson:String,title:String){runOnUiThread{downloadWhatsAppPack(urlsJson,title)}}
   @JavascriptInterface fun requestTelegramImport(urlsJson:String,title:String){runOnUiThread{importTelegramUrls(urlsJson,title)}}
+ }
+
+
+ private fun downloadWhatsAppPack(urlsJson:String,title:String){
+  val urls=try{val a=JSONArray(urlsJson);(0 until a.length()).map{a.getString(it)}.filter{it.startsWith("https://")||it.startsWith("http://")}.take(30)}catch(e:Exception){emptyList()}
+  if(urls.size !in 3..30){Toast.makeText(this,"حزمة WhatsApp تحتاج من 3 إلى 30 ملصقاً",Toast.LENGTH_LONG).show();return}
+  Toast.makeText(this,"جارٍ تنزيل وتجهيز حزمة WhatsApp...",Toast.LENGTH_SHORT).show()
+  Thread{
+   try{
+    val dir=File(filesDir,"pending_whatsapp").apply{mkdirs()}
+    val files=urls.mapIndexed{index,url->
+     val connection=URL(url).openConnection().apply{connectTimeout=15000;readTimeout=20000}
+     val file=File(dir,"sticker_"+System.currentTimeMillis()+"_"+index+".img")
+     connection.getInputStream().use{input->file.outputStream().use{input.copyTo(it)}}
+     if(file.length()==0L)throw IllegalArgumentException("ملف ملصق فارغ")
+     file
+    }
+    runOnUiThread{savePack(files.map{Uri.fromFile(it)},title.ifBlank{"Stigram Stickers"})}
+   }catch(e:Exception){runOnUiThread{Toast.makeText(this,"تعذر تجهيز WhatsApp: "+(e.message?:"خطأ"),Toast.LENGTH_LONG).show()}}
+  }.start()
+ }
+ override fun onActivityResult(requestCode:Int,resultCode:Int,data:Intent?){
+  super.onActivityResult(requestCode,resultCode,data)
+  if(requestCode==imagePickerRequest){
+   val callback=filePathCallback?:return
+   filePathCallback=null
+   val selected=mutableListOf<Uri>()
+   if(resultCode==Activity.RESULT_OK&&data!=null){
+    data.clipData?.let{clip->for(i in 0 until clip.itemCount)selected.add(clip.getItemAt(i).uri)}
+    if(selected.isEmpty())data.data?.let{selected.add(it)}
+   }
+   callback.onReceiveValue(selected.takeIf{it.isNotEmpty()}?.toTypedArray())
+  }
  }
 
  private fun importTelegramUrls(urlsJson:String,title:String){

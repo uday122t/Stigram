@@ -165,7 +165,7 @@
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         link.textContent = "فتح GIF على GIPHY";
-        link.style.cssText = "color:#9ddff0;font-weight:700";
+        link.style.cssText = "color:var(--accent);font-weight:700";
         resultBox.append(link);
       }
       if (typeof toast === "function") toast("تم إرسال GIF إلى GIPHY");

@@ -35,24 +35,34 @@ class MainActivity:Activity(){
  private lateinit var root:LinearLayout
  private lateinit var web:WebView
  private lateinit var store:PackStore
- private var dark=false
+ private var dark=true
  private val site="https://uday122t.github.io/Stigram/"
  override fun onCreate(savedInstanceState:Bundle?){super.onCreate(savedInstanceState);store=PackStore(this);dark=getPreferences(0).getBoolean("dark",false);buildShell();handleIncoming(intent)}
  override fun onNewIntent(i:Intent){super.onNewIntent(i);setIntent(i);handleIncoming(i)}
  private fun dp(v:Int)=(v*resources.displayMetrics.density).toInt()
  private fun buildShell(){
-  root=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setBackgroundColor(if(dark)0xFF071A27.toInt() else 0xFFEDF9FC.toInt())}
-  val bar=LinearLayout(this).apply{orientation=LinearLayout.HORIZONTAL;gravity=Gravity.CENTER_VERTICAL;setPadding(dp(16),dp(8),dp(16),dp(8));setBackgroundColor(if(dark)0xFF102C3B.toInt() else 0xFFDFF5F8.toInt())}
-  bar.addView(TextView(this).apply{text="Stigram ✦";textSize=22f;setTypeface(null,1);setTextColor(if(dark)0xFFEAFBFF.toInt() else 0xFF14506A.toInt())},LinearLayout.LayoutParams(0,dp(48),1f))
-  bar.addView(Button(this).apply{text=if(dark)"☀" else "☾";setOnClickListener{dark=!dark;getPreferences(0).edit().putBoolean("dark",dark).apply();root.setBackgroundColor(if(dark)0xFF071A27.toInt() else 0xFFEDF9FC.toInt());bar.setBackgroundColor(if(dark)0xFF102C3B.toInt() else 0xFFDFF5F8.toInt());web.setBackgroundColor(if(dark)0xFF071A27.toInt() else 0xFFEDF9FC.toInt());val mode=if(dark)"dark" else "light";web.evaluateJavascript("document.documentElement.dataset.theme='"+mode+"';try{let p=JSON.parse(localStorage.getItem(\"stigram_preferences_v1\")||\"{}\");p.theme='"+mode+"';localStorage.setItem(\"stigram_preferences_v1\",JSON.stringify(p))}catch(e){}",null);text=if(dark)"☀" else "☾"}})
-  root.addView(bar)
-  web=WebView(this).apply{settings.javaScriptEnabled=true;settings.domStorageEnabled=true;settings.allowFileAccess=false;settings.allowContentAccess=true;webViewClient=WebViewClient();webChromeClient=WebChromeClient();addJavascriptInterface(StigramNative(),"StigramNative");setBackgroundColor(if(dark)0xFF071A27.toInt() else 0xFFEDF9FC.toInt());loadUrl(site)}
-  root.addView(web,LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,1f));setContentView(root)
+  window.statusBarColor=0xFF070D18.toInt()
+  window.navigationBarColor=0xFF070D18.toInt()
+  if(android.os.Build.VERSION.SDK_INT>=29)window.isNavigationBarContrastEnforced=false
+  root=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setBackgroundColor(0xFF070D18.toInt())}
+  web=WebView(this).apply{
+   settings.javaScriptEnabled=true
+   settings.domStorageEnabled=true
+   settings.allowFileAccess=false
+   settings.allowContentAccess=true
+   settings.loadsImagesAutomatically=true
+   webViewClient=WebViewClient()
+   webChromeClient=WebChromeClient()
+   addJavascriptInterface(StigramNative(),"StigramNative")
+   setBackgroundColor(0xFF070D18.toInt())
+   loadUrl(site)
+  }
+  root.addView(web,LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT))
+  setContentView(root)
  }
  inner class StigramNative{
   @JavascriptInterface fun requestStickerImport(url:String,title:String){runOnUiThread{downloadAndStage(url,title)}}
   @JavascriptInterface fun requestTelegramImport(urlsJson:String,title:String){runOnUiThread{importTelegramUrls(urlsJson,title)}}
-  @JavascriptInterface fun openWebsite(){runOnUiThread{web.loadUrl(site)}}
  }
 
  private fun importTelegramUrls(urlsJson:String,title:String){

@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./config.js"></script>
-<link rel="stylesheet" href="./appearance.css?v=20261031-single-source-v2"></head>
+<link rel="stylesheet" href="./appearance.css?v=20261031-mobile-nav-v3"></head>
 <body>
 <div class="app">
 <aside class="sidebar"><div class="logo">Sti<b>gram</b> ✦</div><nav class="nav">
@@ -57,7 +57,7 @@ function allItems(){return [...localItems,...items]}
 function card(x){let isSaved=saved.has(x.id);return '<article class="sticker-card" data-sticker-id="'+escapeHtml(x.id)+'"><div class="sticker-image">'+(x.url?'<img src="'+escapeHtml(x.url)+'" alt="">':x.emoji||"✨")+'</div><div class="sticker-info"><strong>'+escapeHtml(x.title||"Sticker")+'</strong><span>'+escapeHtml(x.owner||"Stigram")+' · '+escapeHtml(x.category||"ستيكر")+'</span><div class="card-actions"><button class="icon-btn '+(isSaved?"liked":"")+'" onclick="toggleSave(\''+x.id+'\')">'+(isSaved?"♥":"♡")+'</button><button class="icon-btn" onclick="shareItem(\''+x.id+'\')">↗</button><button class="icon-btn whatsapp-action" onclick="addStickerToWhatsApp(\''+x.id+'\')">☘ WhatsApp</button></div></div></article>'}
 
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function render(){let list=allItems().filter(x=>(category==="all"||x.category===category)&&((document.getElementById("searchInput").value||"").trim()===""||(x.title+" "+x.category+" "+x.owner).toLowerCase().includes(document.getElementById("searchInput").value.toLowerCase())));document.getElementById("feed").innerHTML=list.length?list.map(card).join(""):'<div class="empty">ما في ستيكرات منشورة لسه</div>';document.getElementById("exploreGrid").innerHTML=allItems().map(card).join("");document.getElementById("savedGrid").innerHTML=allItems().filter(x=>saved.has(x.id)).map(card).join("")||'<div class="empty">لسه ما حفظت أي ستيكر</div>';let mine=localItems.filter(x=>x.owner===(user?.email||"أنت"));document.getElementById("myGrid").innerHTML=mine.map(card).join("")||'<div class="empty">منشوراتك رح تظهر هون</div>';document.getElementById("myCount").textContent=""}
+function render(){let list=allItems().filter(x=>(category==="all"||x.category===category)&&((document.getElementById("searchInput").value||"").trim()===""||(x.title+" "+x.category+" "+x.owner).toLowerCase().includes(document.getElementById("searchInput").value.toLowerCase())));document.getElementById("feed").innerHTML=list.length?list.map(card).join(""):'<div class="empty">ما في ستيكرات منشورة لسه</div>';document.getElementById("exploreGrid").innerHTML=allItems().map(card).join("");document.getElementById("savedGrid").innerHTML=allItems().filter(x=>saved.has(x.id)).map(card).join("")||'<div class="empty">لسه ما حفظت أي ستيكر</div>';let mine=localItems.filter(x=>x.owner===(user?.email||"أنت"));document.getElementById("myGrid").innerHTML=mine.map(card).join("")||'<div class="empty">منشوراتك رح تظهر هون</div>';document.getElementById("myCount").textContent="";if(typeof translateInterface==="function")translateInterface()}
 function toggleSave(id){saved.has(id)?saved.delete(id):saved.add(id);persist();render()}
 function shareItem(id){let x=allItems().find(a=>a.id===id);if(!x)return;if(x.url){fetch(x.url).then(r=>r.blob()).then(b=>{let f=new File([b],(x.title||"sticker")+".png",{type:b.type});if(navigator.share&&navigator.canShare?.({files:[f]}))navigator.share({files:[f],title:x.title});else{let a=document.createElement("a");a.href=x.url;a.download=f.name;a.click()}}).catch(()=>toast("تعذر مشاركة الملف"))}else navigator.clipboard?.writeText(x.emoji+" "+x.title).then(()=>toast("تم نسخ الستيكر"))}
 function page(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById("page-"+p).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===p));if(p==="create")setTimeout(drawCanvas,40)}
@@ -114,7 +114,7 @@ function translateInterface(){
    el.setAttribute("aria-label",english?(englishText[ar]||ar):ar);
  });
  const b=document.getElementById("langTop");
- b.textContent=english?"ع":"EN";
+ b.textContent=english?"EN":"ع";
  b.setAttribute("aria-label",english?"Switch to Arabic":"Switch to English");
  window.dispatchEvent(new Event("stigram:language"));
 }
@@ -143,5 +143,5 @@ async function init(){try{if(CONFIG.SUPABASE_URL&&CONFIG.SUPABASE_ANON_KEY&&wind
 <script src="./gif-maker.js?v=20261031-theme-v2"></script>
 
 <script src="./giphy-publish.js?v=20261031-theme-v2"></script>
-<script src="./app-experience.js?v=20261031-new-theme-finish-v2"></script><script src="./redesign.js"></script><script src="./android-bridge.js?v=20261031-theme-v2"></script>
+<script src="./app-experience.js?v=20261031-persist-theme-v3"></script><script src="./redesign.js"></script><script src="./android-bridge.js?v=20261031-theme-v2"></script>
 </body></html>

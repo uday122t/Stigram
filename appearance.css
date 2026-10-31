@@ -89,7 +89,7 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:.9}
 .hero p,.muted,.section-kicker,.sticker-info span,.statrow{color:var(--muted)}
 .btn,.icon-btn,.chip,.theme-choice{background:var(--surface-soft);color:var(--text);border:1px solid var(--line)}
 .btn.primary,.create-fab,.nav .create-nav .ico{
- background:linear-gradient(120deg,var(--accent),var(--accent2));color:#082033;border:0;
+ background:linear-gradient(120deg,var(--accent2),var(--accent));color:#082033;border:0;
  box-shadow:0 9px 28px color-mix(in srgb,var(--accent) 28%,transparent);
 }
 .profile-cover{background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 28%,var(--surface)),color-mix(in srgb,var(--accent2) 26%,var(--surface)))}

@@ -24,7 +24,7 @@ import java.util.UUID
 data class Pack(val id:String,val name:String,val publisher:String,val tray:String,val version:String,val files:List<String>)
 class PackStore(private val context:android.content.Context) {
  private val prefs=context.getSharedPreferences("packs",0)
- fun all():List<Pack>=(prefs.getStringSet("ids",emptySet())?:emptySet()).mapNotNull { id ->
+ fun all(): List<Pack> =(prefs.getStringSet("ids",emptySet())?:emptySet()).mapNotNull { id ->
   val raw=prefs.getString(id,null)?:return@mapNotNull null
   val bits=raw.split("|");if(bits.size<5)null else Pack(id,bits[0],bits[1],bits[2],bits[3],bits.drop(4))
  }

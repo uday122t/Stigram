@@ -217,7 +217,7 @@
       reset: "Reset", done: "✓ Done", note: "Your choices are saved automatically"
     } : {
       trigger: "◐ المظهر", head: "المظهر والتخصيص",
-      sub: "اختار شكل Stigram واحفظه", live: "● مباشر",
+      sub: "اختر مظهر Stigram واحفظه", live: "● مباشر",
       mode: "نمط الواجهة", dark: "داكن", light: "فاتح", system: "حسب الجهاز",
       palettes: "لوحات الألوان", custom: "اختيار اللون بدقة",
       hue: "درجة اللون", sat: "التشبع", val: "القيمة / السطوع",
@@ -275,7 +275,7 @@
     const menu = document.createElement("section");
     menu.id = "themeMenu";
     menu.innerHTML =
-      '<div class="theme-menu-head"><div><strong>المظهر والتخصيص</strong><small>اختار شكل Stigram واحفظه</small></div><span class="theme-live-dot">● مباشر</span></div>' +
+      '<div class="theme-menu-head"><div><strong>المظهر والتخصيص</strong><small>اختر مظهر Stigram واحفظه</small></div><span class="theme-live-dot">● مباشر</span></div>' +
       '<strong>نمط الواجهة</strong><div class="theme-row" id="appearanceModes">' +
         '<button type="button" class="theme-choice" data-mode="dark">داكن</button>' +
         '<button type="button" class="theme-choice" data-mode="light">فاتح</button>' +
@@ -389,7 +389,7 @@
         if (platform === "telegram") {
           window.setTimeout(() => document.getElementById("sendTelegramPack")?.click(), 120);
         } else {
-          window.toast?.("تم تحديد الملصق — اختار ملصقين إضافيين على الأقل ثم اضغط إضافة إلى WhatsApp");
+          window.toast?.("تم تحديد الملصق. يرجى تحديد ملصقين إضافيين على الأقل، ثم الضغط على «إضافة إلى WhatsApp».");
         }
       }, 260);
     }

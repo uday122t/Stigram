@@ -205,6 +205,16 @@
     if (preview) preview.style.backgroundColor = hex;
   }
 
+  function commitAppearanceAndClose() {
+    const note = document.getElementById("themeSaveNote");
+    if (!saveSettings()) {
+      if (note) note.textContent = "تعذر حفظ المظهر — حاول مرة ثانية";
+      return;
+    }
+    document.getElementById("themeMenu")?.classList.remove("open");
+    document.getElementById("appearanceButton")?.setAttribute("aria-expanded", "false");
+  }
+
   function buildAppearanceMenu() {
     const topbar = document.querySelector(".topbar");
     if (!topbar || document.getElementById("appearanceButton")) return;
@@ -237,8 +247,8 @@
         '<label>القيمة / السطوع <input id="customVal" class="color-range val-range" type="range" min="0" max="100" value="100"></label>' +
       '</div>' +
       '<div class="theme-footer"><button type="button" class="theme-choice" id="resetAppearance">إعادة ضبط</button>' +
-      '<button type="button" class="btn primary" id="saveAppearance">Save</button></div>' +
-      '<p class="theme-save-note" id="themeSaveNote">احفظ اختيارك للخروج من التخصيص</p>';
+      '<button type="button" class="btn primary" id="commitAppearance"><span aria-hidden="true">✓</span> حفظ</button></div>' +
+      '<p class="theme-save-note" id="themeSaveNote">اختياراتك تُحفظ تلقائياً — اضغط حفظ للخروج</p>';
 
     topbar.appendChild(trigger);
     document.body.appendChild(menu);
@@ -275,16 +285,7 @@
         return;
       }
 
-      if (event.target.closest("#saveAppearance")) {
-        const saved = saveSettings();
-        const note = document.getElementById("themeSaveNote");
-        if (!saved) {
-          if (note) note.textContent = "تعذر الحفظ — حاول مرة ثانية";
-          return;
-        }
-        menu.classList.remove("open");
-        trigger.setAttribute("aria-expanded", "false");
-      }
+      if (event.target.closest("#commitAppearance")) commitAppearanceAndClose();
     });
 
     ["customHue", "customSat", "customVal"].forEach(id => {

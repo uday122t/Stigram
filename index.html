@@ -64,7 +64,7 @@ function page(p){document.querySelectorAll(".page").forEach(x=>x.classList.remov
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>page(b.dataset.page));document.getElementById("createFab").onclick=()=>page("create");document.getElementById("searchInput").oninput=()=>{render();translateInterface()};
 document.getElementById("chips").onclick=e=>{let b=e.target.closest("[data-cat]");if(!b)return;category=b.dataset.cat;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x===b));render()};
 
-const englishText={
+const englishText={"🎞 GIF من GIPHY":"🎞 GIF from GIPHY","ابحث في مكتبة GIPHY الحقيقية أو تصفح الأكثر تداولاً":"Search the GIPHY library or browse trending GIFs","هذا الاسم الفريد يعرّف ملصقات GIF داخل Stigram. ظهوره في بحث إنستغرام يتطلب قناة GIPHY معتمدة بشكل منفصل.":"This unique name identifies your GIF stickers on Stigram. Instagram search visibility requires a separately approved GIPHY channel.","إغلاق":"Close","دخول إلى حسابي":"Log in to my account","انضم إلى Stigram ✦":"Join Stigram ✦","أنشئ حساباً جديداً وابدأ مشاركة الستيكرات":"Create an account and start sharing stickers","إنشاء حساب":"Create account","يتم حفظ الحسابات عبر Supabase، وقد تحتاج لتأكيد بريدك الإلكتروني قبل أول تسجيل دخول.":"Accounts are stored through Supabase. You may need to verify your email before your first login.","ما في ستيكرات منشورة لسه":"No stickers have been posted yet","لسه ما حفظت أي ستيكر":"You haven't saved any stickers yet","منشوراتك رح تظهر هون":"Your posts will appear here","تعذر تهيئة الحساب: ":"Could not initialize account: ","اختار صورة أولاً":"Choose an image first","ستيكر جديد":"New sticker","تعذر حفظ بيانات الستيكر: ":"Could not save sticker details: ","سجّل الدخول لنشر الستيكر على حسابك":"Log in to publish stickers to your account","تم حفظ الستيكر في Stigram":"Sticker saved to Stigram","تم إنشاء الحساب. افتح رسالة التأكيد في بريدك الإلكتروني، ثم ارجع وسجّل الدخول.":"Account created. Open the verification email, then return and log in.","الحساب يحتاج تأكيد البريد الإلكتروني قبل تسجيل الدخول":"Your account needs email verification before logging in","تم تسجيل الدخول بنجاح":"Logged in successfully","تم إنشاء الحساب وتسجيل دخولك بنجاح":"Account created and logged in successfully","أدخل البريد الإلكتروني وكلمة المرور":"Enter your email and password","كلمة المرور يجب أن تكون 6 أحرف على الأقل":"Password must be at least 6 characters","اسم المستخدم يجب أن يكون من 3 إلى 24 حرفاً أو رقماً أو _":"Username must be 3–24 letters, numbers or underscores","خدمة الحسابات غير متصلة حالياً":"Account service is currently unavailable","تم تسجيل الخروج":"Logged out","اختار شكل Stigram واحفظه":"Choose your Stigram look",
 "الرئيسية":"Home","استكشف":"Explore","المحفوظات":"Saved","اصنع ستيكر":"Create",
 "ملفي الشخصي":"Profile","أحدث الستيكرات":"Latest stickers","اكتشف الجديد من المجتمع":"Discover what's new",
 "الكل":"All","ضحك":"Funny","حب":"Love","ميمز":"Memes","حيوانات":"Animals","أنمي":"Anime",
@@ -92,7 +92,6 @@ function translateInterface(){
  const english=lang==="en";
  document.documentElement.lang=lang;
  document.documentElement.dir=english?"ltr":"rtl";
- document.querySelectorAll("[data-i]").forEach(el=>{const d=dict[el.dataset.i];if(d)el.textContent=d[english?1:0]});
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
  let node;
  while((node=walker.nextNode())){
@@ -103,6 +102,7 @@ function translateInterface(){
    if(english&&englishText[key])node.nodeValue=original.replace(key,englishText[key]);
    else if(!english)node.nodeValue=original;
  }
+ document.querySelectorAll("[data-i]").forEach(el=>{const d=dict[el.dataset.i];if(d)el.textContent=d[english?1:0]});
  document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{
    if(el.dataset.arPlaceholder===undefined)el.dataset.arPlaceholder=el.getAttribute("placeholder")||"";
    const ar=el.dataset.arPlaceholder;

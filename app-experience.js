@@ -243,7 +243,12 @@
     topbar.appendChild(trigger);
     document.body.appendChild(menu);
 
-    trigger.addEventListener("click", () => menu.classList.toggle("open"));
+    trigger.setAttribute("aria-controls", "themeMenu");
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.addEventListener("click", () => {
+      const isOpen = menu.classList.toggle("open");
+      trigger.setAttribute("aria-expanded", String(isOpen));
+    });
 
     menu.addEventListener("click", event => {
       const modeButton = event.target.closest("[data-mode]");
@@ -287,6 +292,8 @@
           ROOT.style.setProperty("--accent", primary, "important");
           ROOT.style.setProperty("--accent2", settings.palette === "custom" ? lighten(primary) : palette[1], "important");
           refreshAppearanceControls(true);
+          menu.classList.remove("open");
+          trigger.setAttribute("aria-expanded", "false");
         }
       }
     });
@@ -310,6 +317,7 @@
     document.addEventListener("click", event => {
       if (!menu.contains(event.target) && !trigger.contains(event.target)) {
         menu.classList.remove("open");
+        trigger.setAttribute("aria-expanded", "false");
       }
     });
   }

@@ -5,14 +5,14 @@
   if (!input) return;
 
   const panel = document.createElement("section");
-  panel.style.cssText = "margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(120deg,#171e2d,#20213a)";
+  panel.style.cssText = "margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--text)";
   panel.innerHTML = `
     <h3 style="margin:0 0 6px">📲 انشر GIF على إنستغرام عبر GIPHY</h3>
     <p style="margin:0 0 13px;color:var(--muted);font-size:12px;line-height:1.8">
       ارفع GIF متحركاً بخلفية شفافة إلى GIPHY ليخضع للمراجعة. الظهور في بحث ملصقات Instagram يتطلب قناة Creator أو Brand معتمدة من GIPHY؛ مجرد الرفع لا يضمن ظهوره.
     </p>
     <button type="button" class="btn primary" id="giphyPublishBtn" style="width:100%">🚀 نشر GIF على GIPHY</button>
-    <div id="giphyPublishStatus" style="font-size:12px;color:#9ddff0;margin-top:10px;min-height:18px">اختار ملف GIF متحرك من الأعلى أو أنشئ GIF أولاً ثم اضغط «استخدامه للنشر».</div>
+    <div id="giphyPublishStatus" style="font-size:12px;color:var(--accent);margin-top:10px;min-height:18px">اختار ملف GIF متحرك من الأعلى أو أنشئ GIF أولاً ثم اضغط «استخدامه للنشر».</div>
     <div id="giphyPublishResult" style="margin-top:8px"></div>
     <p style="margin:10px 0 0;color:var(--muted);font-size:11px">مفتاح Beta الحالي محدود بـ10 عمليات رفع يومياً ولا يتيح ربط اسم قناة مستقل. يلزم اعتماد قناة GIPHY للظهور في البحث العام.</p>
   `;

@@ -148,7 +148,7 @@
     preview.style.backgroundColor = hex;
   }
 
-  function updateAppearance(shouldSave = true) {
+  function updateAppearance(shouldSave = true, syncPicker = true) {
     if (!PALETTES[settings.palette] && settings.palette !== "custom") {
       settings.palette = DEFAULTS.palette;
     }
@@ -171,24 +171,24 @@
     ROOT.style.setProperty("--accent2", secondary, "important");
 
     if (shouldSave) saveSettings();
-    refreshAppearanceControls();
+    refreshAppearanceControls(syncPicker);
   }
 
-  function refreshAppearanceControls() {
+  function refreshAppearanceControls(syncPicker = true) {
     document.querySelectorAll("#themeMenu [data-mode]").forEach(button => {
       button.classList.toggle("active", button.dataset.mode === settings.theme);
     });
     document.querySelectorAll("#themeMenu [data-palette]").forEach(button => {
       button.classList.toggle("active", button.dataset.palette === settings.palette);
     });
-    updatePicker(selectedColor());
+    if (syncPicker) updatePicker(selectedColor());
   }
 
-  function setCustomColor(hex) {
+  function setCustomColor(hex, syncPicker = true) {
     if (!isHex(hex)) return false;
     settings.palette = "custom";
     settings.accent = hex.toUpperCase();
-    updateAppearance(true);
+    updateAppearance(true, syncPicker);
     return true;
   }
 
@@ -197,7 +197,12 @@
     const saturation = document.getElementById("customSat");
     const value = document.getElementById("customVal");
     if (!hue || !saturation || !value) return;
-    setCustomColor(hsvToHex(hue.value, saturation.value, value.value));
+    const hex = hsvToHex(hue.value, saturation.value, value.value);
+    setCustomColor(hex, false);
+    const code = document.getElementById("customHex");
+    const preview = document.getElementById("customColorPreview");
+    if (code) code.value = hex;
+    if (preview) preview.style.backgroundColor = hex;
   }
 
   function buildAppearanceMenu() {
@@ -273,7 +278,16 @@
             ? "تم حفظ إعداداتك الحالية وتطبيقها ✓"
             : "تعذر الحفظ في مساحة التخزين";
         }
-        if (saved) updateAppearance(false);
+        if (saved) {
+          ROOT.dataset.theme = resolvedTheme();
+          ROOT.dataset.appearance = settings.theme;
+          ROOT.dataset.palette = settings.palette;
+          const palette = PALETTES[settings.palette] || PALETTES.midnight;
+          const primary = settings.palette === "custom" ? settings.accent : (settings.accent || palette[0]);
+          ROOT.style.setProperty("--accent", primary, "important");
+          ROOT.style.setProperty("--accent2", settings.palette === "custom" ? lighten(primary) : palette[1], "important");
+          refreshAppearanceControls(true);
+        }
       }
     });
 

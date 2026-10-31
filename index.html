@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#11111b"><title>Stigram — عالم الستيكرات</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="./app-theme.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./config.js"></script>
 <style>
@@ -53,7 +53,8 @@ const dict={home:["الرئيسية","Home"],explore:["استكشف","Explore"],
 function toast(s){let t=document.getElementById("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400)}
 function persist(){localStorage.setItem("stigram_items",JSON.stringify(localItems));localStorage.setItem("stigram_saved",JSON.stringify([...saved]))}
 function allItems(){return [...localItems,...items]}
-function card(x){if(typeof window.card==="function")return window.card(x);let isSaved=saved.has(x.id);return '<article class="sticker-card"><div class="sticker-image">'+(x.url?'<img src="'+escapeHtml(x.url)+'" alt="">':x.emoji||"✨")+'</div><div class="sticker-info"><strong>'+escapeHtml(x.title||"Sticker")+'</strong><span>'+escapeHtml(x.owner||"Stigram")+' · '+escapeHtml(x.category||"ستيكر")+'</span><div class="card-actions"><button class="icon-btn '+(isSaved?"liked":"")+'" onclick="toggleSave(\''+x.id+'\')">'+(isSaved?"♥":"♡")+'</button><button class="icon-btn" onclick="shareItem(\''+x.id+'\')">↗</button></div></div></article>'}
+function card(x){let isSaved=saved.has(x.id);return '<article class="sticker-card" data-sticker-id="'+escapeHtml(x.id)+'"><div class="sticker-image">'+(x.url?'<img src="'+escapeHtml(x.url)+'" alt="">':x.emoji||"✨")+'</div><div class="sticker-info"><strong>'+escapeHtml(x.title||"Sticker")+'</strong><span>'+escapeHtml(x.owner||"Stigram")+' · '+escapeHtml(x.category||"ستيكر")+'</span><div class="card-actions"><button class="icon-btn '+(isSaved?"liked":"")+'" onclick="toggleSave(\''+x.id+'\')">'+(isSaved?"♥":"♡")+'</button><button class="icon-btn" onclick="shareItem(\''+x.id+'\')">↗</button><button class="icon-btn whatsapp-action" onclick="addStickerToWhatsApp(\''+x.id+'\')">☘ WhatsApp</button></div></div></article>'}
+
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function render(){let list=allItems().filter(x=>(category==="all"||x.category===category)&&((document.getElementById("searchInput").value||"").trim()===""||(x.title+" "+x.category+" "+x.owner).toLowerCase().includes(document.getElementById("searchInput").value.toLowerCase())));document.getElementById("feed").innerHTML=list.length?list.map(card).join(""):'<div class="empty">ما في ستيكرات منشورة لسه</div>';document.getElementById("exploreGrid").innerHTML=allItems().map(card).join("");document.getElementById("savedGrid").innerHTML=allItems().filter(x=>saved.has(x.id)).map(card).join("")||'<div class="empty">لسه ما حفظت أي ستيكر</div>';let mine=localItems.filter(x=>x.owner===(user?.email||"أنت"));document.getElementById("myGrid").innerHTML=mine.map(card).join("")||'<div class="empty">منشوراتك رح تظهر هون</div>';document.getElementById("myCount").textContent=""}
 function toggleSave(id){saved.has(id)?saved.delete(id):saved.add(id);persist();render()}
@@ -83,5 +84,5 @@ async function init(){try{if(CONFIG.SUPABASE_URL&&CONFIG.SUPABASE_ANON_KEY&&wind
 <script src="./gif-maker.js"></script>
 <script src="./sharing-integrations.js"></script>
 <script src="./giphy-publish.js"></script>
-<script src="./android-bridge.js"></script>
+<script src="./android-bridge.js"></script><script src="./app-experience.js"></script>
 </body></html>

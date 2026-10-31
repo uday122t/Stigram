@@ -1,0 +1,119 @@
+/* Stigram — unified glassmorphism appearance system */
+:root,:root[data-theme="dark"]{
+ color-scheme:dark!important;
+ --bg:#071321;--surface:rgba(15,31,49,.58);--surface-strong:rgba(15,31,49,.78);
+ --surface-soft:rgba(22,45,65,.48);--line:rgba(153,207,231,.20);
+ --text:#eff9ff;--muted:#9bb5c8;--shadow:0 18px 55px rgba(0,8,20,.30);
+ --glass-blur:24px;
+}
+:root[data-theme="light"]{
+ color-scheme:light!important;
+ --bg:#edf6fc;--surface:rgba(255,255,255,.58);--surface-strong:rgba(255,255,255,.82);
+ --surface-soft:rgba(255,255,255,.42);--line:rgba(105,151,180,.24);
+ --text:#18364b;--muted:#668397;--shadow:0 18px 50px rgba(53,105,139,.12);
+ --glass-blur:24px;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%;background:var(--bg)!important;color:var(--text)!important;color-scheme:inherit!important}
+body{
+ background:
+ radial-gradient(ellipse 620px 440px at 92% -8%,color-mix(in srgb,var(--accent) 23%,transparent),transparent 72%),
+ radial-gradient(ellipse 560px 420px at 0% 48%,color-mix(in srgb,var(--accent2) 20%,transparent),transparent 70%),
+ radial-gradient(ellipse 520px 340px at 58% 110%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 72%),
+ var(--bg)!important;
+ background-attachment:fixed!important;transition:background .28s ease,color .28s ease;
+}
+.app,.main{background:transparent!important}
+.sidebar,.sticker-card,.profile-head,.modal,.page .modal,#giphyPanel,#gifIdentity,.gif-identity,
+.search-results,#androidPackPanel,.settings-panel,.auth-box,.auth-modal,.dropdown-menu,
+.context-menu,.profile-card,.stx-row,.editor-preview,.toast,#themeMenu,.hero,.empty,
+.search input,.field input,.field textarea,.field select,.chip,.btn,.icon-btn,.app-download,
+.profile-cover,.crop-tools button,.theme-choice{
+ -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(175%)!important;
+ backdrop-filter:blur(var(--glass-blur)) saturate(175%)!important;
+}
+.sidebar,.sticker-card,.profile-head,.modal,.page .modal,#giphyPanel,#gifIdentity,.gif-identity,
+.search-results,#androidPackPanel,.settings-panel,.auth-box,.auth-modal,.dropdown-menu,
+.context-menu,.profile-card,.stx-row,.editor-preview,.toast,#themeMenu,.empty,.hero{
+ background:var(--surface)!important;color:var(--text)!important;
+ border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;
+}
+.sidebar{border-radius:28px!important}
+.sticker-card{border-radius:23px!important;overflow:hidden!important;transition:transform .22s,border-color .22s,box-shadow .22s!important}
+.sticker-card:hover{transform:translateY(-4px)!important;border-color:color-mix(in srgb,var(--accent) 55%,var(--line))!important;box-shadow:0 22px 58px color-mix(in srgb,var(--accent) 15%,transparent)!important}
+.sticker-image{background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 14%,var(--surface-strong)),color-mix(in srgb,var(--accent2) 14%,var(--surface-soft)))!important}
+.search input,.field input,.field textarea,.field select,input,textarea,select{
+ background:var(--surface-strong)!important;color:var(--text)!important;border:1px solid var(--line)!important;
+}
+.search input::placeholder,input::placeholder,textarea::placeholder{color:var(--muted)!important;opacity:.82}
+.nav button{color:var(--muted)!important}
+.nav button.active,.nav button:hover,.chip.active{
+ background:color-mix(in srgb,var(--accent) 19%,var(--surface-strong))!important;
+ color:var(--text)!important;border-color:color-mix(in srgb,var(--accent) 48%,var(--line))!important;
+}
+.logo,.logo b,.nav .create-nav,.section-head h2,.profile-head h2,.page h2,.page h3,
+.sticker-info strong,label,.modal label,.field label{color:var(--text)!important}
+.logo b{color:var(--accent)!important}
+.hero{background:linear-gradient(125deg,color-mix(in srgb,var(--accent) 22%,var(--surface)),color-mix(in srgb,var(--accent2) 18%,var(--surface)))!important}
+.hero p,.muted,.section-kicker,.sticker-info span,.statrow{color:var(--muted)!important}
+.btn,.icon-btn,.chip,.theme-choice{background:var(--surface-soft)!important;color:var(--text)!important;border:1px solid var(--line)!important}
+.btn.primary,.create-fab,.nav .create-nav .ico{
+ background:linear-gradient(120deg,var(--accent),var(--accent2))!important;color:#082033!important;border:0!important;
+ box-shadow:0 9px 28px color-mix(in srgb,var(--accent) 28%,transparent)!important;
+}
+.empty{color:var(--muted)!important}
+.profile-cover{background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 28%,var(--surface)),color-mix(in srgb,var(--accent2) 26%,var(--surface)))!important}
+.modal-back{background:rgba(5,18,32,.34)!important;backdrop-filter:blur(12px)!important}
+.editor-preview{background:var(--surface-strong)!important}
+.toast{color:var(--text)!important}
+.search-results{background:var(--surface-strong)!important}
+#themeMenu{
+ display:none;position:fixed;z-index:100;top:76px;right:18px;left:auto;
+ width:min(390px,calc(100vw - 24px));max-height:min(78vh,720px);overflow:auto;
+ padding:19px;border-radius:23px!important;background:var(--surface-strong)!important;
+ border:1px solid var(--line)!important;color:var(--text)!important;box-shadow:var(--shadow)!important;
+ -webkit-backdrop-filter:blur(30px) saturate(185%)!important;backdrop-filter:blur(30px) saturate(185%)!important;
+}
+#themeMenu.open{display:block}
+.theme-menu-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}
+.theme-menu-head strong{display:block;font-size:16px}
+.theme-menu-head small,.theme-save-note{display:block;color:var(--muted)!important;font-size:11px;margin-top:4px}
+#themeMenu>strong{display:block;margin:14px 0 9px;font-size:12px;color:var(--muted)!important}
+#themeMenu .theme-row{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 15px}
+#themeMenu .theme-choice{border-radius:13px;padding:9px 11px;font-size:12px}
+#themeMenu .theme-choice.active{outline:2px solid var(--accent);outline-offset:1px;background:color-mix(in srgb,var(--accent) 18%,var(--surface-strong))!important}
+.theme-dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-2px;margin-left:5px}
+.theme-custom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:15px 0;color:var(--text)!important}
+#themeMenu input[type=color]{width:48px;height:36px;padding:3px;border-radius:10px;cursor:pointer}
+.theme-footer{display:flex;gap:9px;align-items:center;margin-top:15px}
+.theme-footer .btn.primary{flex:1}
+.theme-save-note{margin:10px 0 0;text-align:center}
+.appearance-trigger{white-space:nowrap;flex-shrink:0}
+:root[data-theme="light"] .sidebar,:root[data-theme="light"] .sticker-card,
+:root[data-theme="light"] .profile-head,:root[data-theme="light"] .modal,
+:root[data-theme="light"] .page .modal,:root[data-theme="light"] #giphyPanel,
+:root[data-theme="light"] #gifIdentity,:root[data-theme="light"] #androidPackPanel,
+:root[data-theme="light"] .search-results,:root[data-theme="light"] #themeMenu,
+:root[data-theme="light"] .stx-row,:root[data-theme="light"] .editor-preview,
+:root[data-theme="light"] .settings-panel,:root[data-theme="light"] .auth-box{
+ background:rgba(255,255,255,.64)!important;color:#18364b!important;
+ border-color:rgba(105,151,180,.24)!important;
+ box-shadow:0 16px 48px rgba(53,105,139,.11)!important;
+}
+:root[data-theme="light"] .search input,:root[data-theme="light"] .field input,
+:root[data-theme="light"] .field textarea,:root[data-theme="light"] .field select,
+:root[data-theme="light"] input,:root[data-theme="light"] textarea,:root[data-theme="light"] select{
+ background:rgba(255,255,255,.78)!important;color:#18364b!important;border-color:rgba(105,151,180,.28)!important;
+}
+:root[data-theme="light"] .sticker-info strong,:root[data-theme="light"] .page h2,
+:root[data-theme="light"] .page h3,:root[data-theme="light"] label,
+:root[data-theme="light"] .section-head h2,:root[data-theme="light"] .profile-head h2{color:#18364b!important}
+:root[data-theme="light"] .modal-back{background:rgba(219,237,248,.42)!important}
+:root[data-theme="light"] .nav button{color:#668397!important}
+:root[data-theme="light"] .nav button.active,:root[data-theme="light"] .nav button:hover{color:#18364b!important}
+:root[data-theme="light"] .btn.primary{color:#082033!important}
+@media(max-width:700px){
+ #themeMenu{top:auto;bottom:90px;right:12px;left:12px;width:auto;max-height:68vh}
+ .sidebar{background:var(--surface-strong)!important}
+ .appearance-trigger{padding:8px 10px!important;font-size:11px}
+}

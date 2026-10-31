@@ -146,3 +146,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
  .appearance-trigger{padding:8px 10px;font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Custom color picker: keep the selected swatch visible on both themes */
+#themeMenu input[type="color"]{appearance:none;-webkit-appearance:none;display:inline-block;width:52px;height:40px;padding:4px;border:1px solid var(--line)!important;border-radius:12px;background:var(--surface-strong)!important;cursor:pointer;overflow:hidden}
+#themeMenu input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
+#themeMenu input[type="color"]::-webkit-color-swatch{border:0;border-radius:8px}
+#themeMenu input[type="color"]::-moz-color-swatch{border:0;border-radius:8px}

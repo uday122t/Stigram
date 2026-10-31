@@ -115,3 +115,147 @@ body{
 :root[data-theme="light"] input,:root[data-theme="light"] textarea,:root[data-theme="light"] select{background:rgba(255,255,255,.74)!important;color:#080d12!important;border-color:rgba(67,119,148,.25)!important}
 :root[data-theme="light"] input::placeholder,:root[data-theme="light"] textarea::placeholder{color:#526a79!important;opacity:1!important}
 :root[data-theme="light"] .btn.primary,:root[data-theme="light"] .create-fab,:root[data-theme="light"] .nav .create-nav .ico{color:#071923!important}
+
+
+/* FINAL THEME OVERRIDES — take precedence over legacy app and redesign styles */
+:root[data-theme="light"]{
+  color-scheme:light!important;
+  --bg:#f4faff!important;--surface:rgba(255,255,255,.58)!important;
+  --surface-strong:rgba(255,255,255,.82)!important;--surface-soft:rgba(255,255,255,.46)!important;
+  --line:rgba(55,112,145,.20)!important;--text:#080f16!important;--muted:#344c5d!important;
+  --shadow:0 14px 42px rgba(36,94,128,.10)!important;
+}
+:root[data-theme="light"] html,
+:root[data-theme="light"] body,
+:root[data-theme="light"] body{
+  background-color:#f4faff!important;color:#080f16!important;color-scheme:light!important;
+}
+:root[data-theme="light"] body{
+  background-image:
+    radial-gradient(ellipse 700px 480px at 90% -8%,rgba(83,190,232,.19),transparent 70%),
+    radial-gradient(ellipse 600px 440px at 0% 52%,rgba(111,215,176,.17),transparent 70%),
+    linear-gradient(145deg,#f8fcff 0%,#edf8ff 52%,#f5fffb 100%)!important;
+  background-attachment:fixed!important;
+}
+:root[data-theme="light"] .app,
+:root[data-theme="light"] .main,
+:root[data-theme="light"] .page,
+:root[data-theme="light"] .content,
+:root[data-theme="light"] main{background:transparent!important;color:#080f16!important}
+:root[data-theme="light"] .sidebar,
+:root[data-theme="light"] .sticker-card,
+:root[data-theme="light"] .profile-head,
+:root[data-theme="light"] .modal,
+:root[data-theme="light"] .page .modal,
+:root[data-theme="light"] .hero,
+:root[data-theme="light"] .search-results,
+:root[data-theme="light"] .empty,
+:root[data-theme="light"] #gifIdentity,
+:root[data-theme="light"] #giphyPanel,
+:root[data-theme="light"] #androidPackPanel,
+:root[data-theme="light"] #themeMenu,
+:root[data-theme="light"] .settings-panel,
+:root[data-theme="light"] .auth-box,
+:root[data-theme="light"] .auth-modal,
+:root[data-theme="light"] .profile-card,
+:root[data-theme="light"] .stx-row,
+:root[data-theme="light"] .dropdown-menu,
+:root[data-theme="light"] .context-menu,
+:root[data-theme="light"] .toast,
+:root[data-theme="light"] #firstCreateGuide{
+  background:rgba(255,255,255,.58)!important;
+  color:#080f16!important;border:1px solid rgba(55,112,145,.20)!important;
+  box-shadow:0 14px 42px rgba(36,94,128,.10)!important;
+  -webkit-backdrop-filter:blur(30px) saturate(185%)!important;
+  backdrop-filter:blur(30px) saturate(185%)!important;
+}
+:root[data-theme="light"] .sticker-image,
+:root[data-theme="light"] .editor-preview{
+  background:linear-gradient(145deg,rgba(255,255,255,.82),rgba(224,245,250,.72))!important;
+}
+:root[data-theme="light"] .search input,
+:root[data-theme="light"] .field input,
+:root[data-theme="light"] .field textarea,
+:root[data-theme="light"] .field select,
+:root[data-theme="light"] input,
+:root[data-theme="light"] textarea,
+:root[data-theme="light"] select{
+  background:rgba(255,255,255,.82)!important;color:#080f16!important;
+  border:1px solid rgba(55,112,145,.23)!important;
+}
+:root[data-theme="light"] .btn,
+:root[data-theme="light"] .icon-btn,
+:root[data-theme="light"] .chip,
+:root[data-theme="light"] .theme-choice{
+  background:rgba(255,255,255,.54)!important;color:#080f16!important;
+  border:1px solid rgba(55,112,145,.20)!important;
+}
+:root[data-theme="light"] .btn.primary,
+:root[data-theme="light"] .create-fab,
+:root[data-theme="light"] .nav .create-nav .ico{
+  background:linear-gradient(120deg,var(--accent),var(--accent2))!important;color:#071923!important;
+}
+:root[data-theme="light"] .nav button.active,
+:root[data-theme="light"] .nav button:hover,
+:root[data-theme="light"] .chip.active,
+:root[data-theme="light"] #themeMenu .theme-choice.active{
+  background:rgba(91,190,224,.20)!important;color:#080f16!important;
+}
+:root[data-theme="light"] .logo,
+:root[data-theme="light"] .logo b,
+:root[data-theme="light"] .nav button,
+:root[data-theme="light"] .nav button span,
+:root[data-theme="light"] .section-head h2,
+:root[data-theme="light"] .page h1,
+:root[data-theme="light"] .page h2,
+:root[data-theme="light"] .page h3,
+:root[data-theme="light"] .hero h1,
+:root[data-theme="light"] .hero p,
+:root[data-theme="light"] .sticker-info,
+:root[data-theme="light"] .sticker-info strong,
+:root[data-theme="light"] .profile-head h2,
+:root[data-theme="light"] label,
+:root[data-theme="light"] .field label,
+:root[data-theme="light"] .modal label,
+:root[data-theme="light"] .theme-menu-head,
+:root[data-theme="light"] .theme-menu-head strong,
+:root[data-theme="light"] .theme-custom,
+:root[data-theme="light"] .empty,
+:root[data-theme="light"] .statrow,
+:root[data-theme="light"] .muted,
+:root[data-theme="light"] .section-kicker,
+:root[data-theme="light"] .sticker-info span{
+  color:#080f16!important;
+}
+:root[data-theme="light"] input::placeholder,
+:root[data-theme="light"] textarea::placeholder,
+:root[data-theme="light"] .theme-menu-head small,
+:root[data-theme="light"] .theme-save-note{
+  color:#40596a!important;opacity:1!important;
+}
+:root[data-theme="light"] .modal-back{background:rgba(218,239,250,.48)!important}
+:root[data-theme="light"] .sidebar{background:rgba(255,255,255,.62)!important}
+:root[data-theme="light"] .profile-cover{background:linear-gradient(120deg,rgba(113,205,240,.38),rgba(132,225,183,.34))!important;color:#080f16!important}
+
+/* Consistent translucent glass surfaces in dark mode too */
+:root[data-theme="dark"] .sidebar,
+:root[data-theme="dark"] .sticker-card,
+:root[data-theme="dark"] .profile-head,
+:root[data-theme="dark"] .modal,
+:root[data-theme="dark"] .page .modal,
+:root[data-theme="dark"] #themeMenu,
+:root[data-theme="dark"] .search-results,
+:root[data-theme="dark"] .settings-panel,
+:root[data-theme="dark"] .auth-box,
+:root[data-theme="dark"] .stx-row{
+  background:rgba(12,27,44,.62)!important;
+  border:1px solid rgba(139,205,235,.20)!important;
+  -webkit-backdrop-filter:blur(30px) saturate(185%)!important;
+  backdrop-filter:blur(30px) saturate(185%)!important;
+}
+:root[data-theme="dark"] .search input,
+:root[data-theme="dark"] .field input,
+:root[data-theme="dark"] .field textarea,
+:root[data-theme="dark"] .field select{
+  background:rgba(12,27,44,.56)!important;
+}

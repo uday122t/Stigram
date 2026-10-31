@@ -18,9 +18,10 @@
   return "#"+mix(r)+mix(g)+mix(b);
  }
  function apply(){
-  if(!palettes[prefs.palette])prefs.palette="midnight";
+  if(!palettes[prefs.palette]&&prefs.palette!=="custom")prefs.palette="midnight";
   if(!["dark","light","system"].includes(prefs.theme))prefs.theme="dark";
   if(!validHex(prefs.accent))prefs.accent="";
+  if(prefs.palette==="custom"&&!prefs.accent)prefs.palette="midnight";
   root.dataset.theme=effectiveTheme();root.dataset.appearance=prefs.theme;root.dataset.palette=prefs.palette;
   const colors=prefs.palette==="custom"&&validHex(prefs.accent)?[prefs.accent,lighter(prefs.accent)]:palettes[prefs.palette];
   const primary=prefs.accent||colors[0];

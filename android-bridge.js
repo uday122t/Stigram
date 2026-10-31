@@ -16,7 +16,7 @@
     panel.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <div><h3 style="margin:0">📲 حزمة WhatsApp من الموقع</h3>
-        <p style="margin:5px 0 0;color:var(--muted);font-size:12px">اختار من 3 إلى 30 ملصقاً من منشوراتك، ثم أرسلها لتطبيق Stigram Stickers لإضافتها كحزمة واتساب.</p></div>
+        <p style="margin:5px 0 0;color:var(--muted);font-size:12px">حدّد من 3 إلى 30 ملصقاً من منشوراتك، ثم أرسلها إلى تطبيق Stigram Stickers لإضافتها ضمن حزمة WhatsApp.</p></div>
         <button class="btn" id="refreshAndroidPack" type="button">تحديث</button>
       </div>
       <div id="androidPackList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:9px;margin:14px 0">
@@ -80,7 +80,7 @@
         <input type="checkbox" data-sticker-id="${esc(item.id)}" ${selected.has(item.id) ? "checked" : ""} style="accent-color:var(--accent)">
         <img src="${esc(item.media_url)}" alt="" loading="lazy" style="width:48px;height:48px;object-fit:contain;background:var(--surface-soft);border-radius:9px">
         <span style="font-size:11px;overflow-wrap:anywhere">${esc(item.title || "ملصق")}</span>
-      </label>`).join("") : '<div class="empty">ما عندك ملصقات ثابتة منشورة بعد</div>';
+      </label>`).join("") : '<div class="empty">لم تنشر أي ملصقات ثابتة حتى الآن</div>';
     updateCount();
   }
 
@@ -152,7 +152,7 @@
         return;
       }
       await navigator.share({ files, title: "Stigram WhatsApp sticker pack", text: "ملصقات من موقع Stigram" });
-      window.toast?.("اختار Stigram Stickers من قائمة المشاركة؛ التطبيق سيحوّلها إلى حزمة واتساب");
+      window.toast?.("اختر Stigram Stickers من قائمة المشاركة؛ وسيحوّلها التطبيق إلى حزمة WhatsApp");
     } catch (error) {
       if (error?.name !== "AbortError") window.toast?.(error.message || "تعذر إرسال الحزمة");
     } finally {

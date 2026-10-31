@@ -8,9 +8,9 @@ input.addEventListener("input",()=>{
  clearTimeout(timer);const term=input.value.trim(),id=++seq;
  if(!term){panel.hidden=true;return}
  timer=setTimeout(async()=>{
-  const local=(window.StigramSearchUsers||[]).filter(x=>(x.username+" "+x.display_name).toLowerCase().includes(term.toLowerCase()));
+  const local=[].filter(x=>(x.username+" "+x.display_name).toLowerCase().includes(term.toLowerCase()));
   try{
-   const client=window.sb||null;
+   const client=(typeof sb!=="undefined"?sb:null);
    if(!client){panel.hidden=true;return}
    const safe=term.replace(/[,%()]/g," ").trim();
    if(!safe){panel.hidden=true;return}
@@ -30,13 +30,13 @@ panel.addEventListener("click",async e=>{
   const q=await client.from("stickers").select("*").eq("user_id",uid).eq("is_public",true).order("created_at",{ascending:false}).limit(50);
   if(q.error)throw q.error;
   const mapped=(q.data||[]).map(x=>({id:x.id,title:x.title,category:x.tags?.[0]||"ستيكر",owner:name,url:x.media_url,cloud:true,visibility:"public"}));
-  window.items=[...mapped,...(window.items||[]).filter(x=>x.owner!==name)];
+  items=[...mapped,...items.filter(x=>x.owner!==name)];
   document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
   document.getElementById("page-explore")?.classList.add("active");
   document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page==="explore"));
   const grid=document.getElementById("exploreGrid");
-  if(grid)grid.innerHTML=mapped.length?mapped.map(x=>window.card(x)).join(""):'<div class="empty">هذا الحساب ما عنده ملصقات عامة لسه</div>';
- }catch(err){window.toast?.("تعذر تحميل الحساب: "+(err.message||"خطأ"))}
+  if(grid)grid.innerHTML=mapped.length?mapped.map(x=>card(x)).join(""):'<div class="empty">هذا الحساب ما عنده ملصقات عامة لسه</div>';
+ }catch(err){toast("تعذر تحميل الحساب: "+(err.message||"خطأ"))}
 });
 document.addEventListener("click",e=>{if(!panel.contains(e.target)&&!e.target.closest(".search"))panel.hidden=true});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")panel.hidden=true});

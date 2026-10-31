@@ -1,51 +1,62 @@
 (() => {
  "use strict";
- const root=document.documentElement, key="stigram_preferences_v1";
- const defaults={theme:"dark",palette:"sky",firstCreated:false};
+ const root=document.documentElement,key="stigram_preferences_v2";
+ const defaults={theme:"dark",palette:"midnight",accent:""};
  let prefs={...defaults};
  try{prefs={...defaults,...JSON.parse(localStorage.getItem(key)||"{}")}}catch(_){}
- prefs.theme="dark";prefs.palette="sky";
- try{if(JSON.parse(localStorage.getItem("stigram_items")||"[]").length)prefs.firstCreated=true}catch(_){}
- function apply(){root.dataset.theme=prefs.theme;root.dataset.palette=prefs.palette;localStorage.setItem(key,JSON.stringify(prefs))}
- function addThemeUI(){document.getElementById("themeTrigger")?.remove();document.getElementById("themeMenu")?.remove();}
- function refresh(){document.querySelectorAll("[data-theme-choice]").forEach(x=>x.classList.toggle("active",x.dataset.themeChoice===prefs.theme));document.querySelectorAll("[data-palette-choice]").forEach(x=>x.classList.toggle("active",x.dataset.paletteChoice===prefs.palette))}
- function addCreateGuide(){document.getElementById("firstCreateGuide")?.remove();return;
-
-  const page=document.getElementById("page-create");if(!page||document.getElementById("firstCreateGuide"))return;
-  const guide=document.createElement("div");guide.id="firstCreateGuide";guide.innerHTML='<h3>✨ أول ستيكر إلك يبدأ من هان</h3><p>ارفع صورة، قصّها وعدّلها، وبعدها احفظها في مجموعتك وشاركها مع العالم.</p><button class="btn primary" id="guideStart">ابدأ الآن</button>';
-  page.insertBefore(guide,page.children[1]||null);
-  guide.querySelector("#guideStart").onclick=()=>document.getElementById("imageFile")?.click();
-  if(prefs.firstCreated)guide.remove();
+ const palettes={
+  midnight:["#55c8ff","#72e0b1"],purple:["#a78bfa","#f0abfc"],cyan:["#22d3ee","#67e8f9"],
+  emerald:["#34d399","#a3e635"],rose:["#fb7185","#f9a8d4"],sunset:["#fb923c","#f472b6"],
+  arctic:["#60a5fa","#a5f3fc"],graphite:["#a1a1aa","#d4d4d8"],ocean:["#38bdf8","#2dd4bf"],crimson:["#f87171","#fda4af"]
+ };
+ const names={midnight:"Midnight Blue",purple:"Purple Nebula",cyan:"Cyber Cyan",emerald:"Emerald Glass",rose:"Rose Quartz",sunset:"Sunset",arctic:"Arctic",graphite:"Graphite",ocean:"Ocean",crimson:"Crimson"};
+ function effectiveTheme(){return prefs.theme==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):prefs.theme}
+ function apply(){
+  root.dataset.theme=effectiveTheme();root.dataset.appearance=prefs.theme;root.dataset.palette=prefs.palette;
+  const colors=palettes[prefs.palette]||palettes.midnight;
+  root.style.setProperty("--accent",prefs.accent||colors[0]);root.style.setProperty("--accent2",colors[1]);
+  try{localStorage.setItem(key,JSON.stringify(prefs))}catch(_){}
+  refresh();
  }
- function wrapPublish(){
-  const original=window.publish;
-  if(typeof original!=="function"||original.__stigWrapped)return;
-  const wrapped=async function(...args){const before=localStorage.getItem("stigram_items")||"[]";const result=await original.apply(this,args);try{const after=JSON.parse(localStorage.getItem("stigram_items")||"[]");if(after.length>JSON.parse(before).length){prefs.firstCreated=true;apply();document.getElementById("firstCreateGuide")?.remove()}}catch(_){}return result};
-  wrapped.__stigWrapped=true;window.publish=wrapped;
+ function addThemeUI(){
+  const top=document.querySelector(".topbar");if(!top||document.getElementById("appearanceButton"))return;
+  const button=document.createElement("button");button.id="appearanceButton";button.className="btn appearance-trigger";button.type="button";button.textContent="◐ المظهر";
+  const menu=document.createElement("section");menu.id="themeMenu";menu.innerHTML=
+   '<strong>المظهر والتخصيص</strong><div class="theme-row" id="appearanceModes"><button class="theme-choice" data-mode="dark">داكن</button><button class="theme-choice" data-mode="light">فاتح</button><button class="theme-choice" data-mode="system">حسب الجهاز</button></div>'+
+   '<strong>الألوان</strong><div class="theme-row" id="paletteChoices">'+Object.entries(names).map(([k,n])=>'<button class="theme-choice" data-palette="'+k+'"><i class="theme-dot" style="background:'+palettes[k][0]+'"></i>'+n+'</button>').join("")+'</div>'+
+   '<label class="theme-custom">لون مخصص <input id="customAccent" type="color" value="'+(prefs.accent||palettes[prefs.palette][0])+'"></label><button class="theme-choice" id="resetAppearance">استعادة الافتراضي</button>';
+  top.append(button);document.body.append(menu);
+  button.addEventListener("click",()=>menu.classList.toggle("open"));
+  menu.addEventListener("click",e=>{
+   const mode=e.target.closest("[data-mode]");if(mode){prefs.theme=mode.dataset.mode;apply()}
+   const palette=e.target.closest("[data-palette]");if(palette){prefs.palette=palette.dataset.palette;prefs.accent="";apply()}
+   if(e.target.id==="resetAppearance"){prefs={...defaults};apply()}
+  });
+  menu.querySelector("#customAccent").addEventListener("input",e=>{prefs.accent=e.target.value;apply()});
+  document.addEventListener("click",e=>{if(!menu.contains(e.target)&&!button.contains(e.target))menu.classList.remove("open")});
  }
- function installAction(){
+ function refresh(){
+  document.querySelectorAll("[data-mode]").forEach(x=>x.classList.toggle("active",x.dataset.mode===prefs.theme));
+  document.querySelectorAll("[data-palette]").forEach(x=>x.classList.toggle("active",x.dataset.palette===prefs.palette));
+  const color=document.getElementById("customAccent");if(color&&prefs.accent)color.value=prefs.accent;
+ }
+ function installActions(){
   window.addStickerToWhatsApp=function(id){
    const card=document.querySelector('[data-sticker-id="'+CSS.escape(String(id))+'"]');
-   const image=card?.querySelector(".sticker-image img");
-   const title=card?.querySelector(".sticker-info strong")?.textContent||"Stigram Sticker";
-   const url=image?.src;
-   if(!url){window.toast?.("هذا الملصق غير متاح للتصدير");return}
-   if(window.StigramNative?.requestStickerImport){window.StigramNative.requestStickerImport(url,title);return}
-   const appLink="intent://import?url="+encodeURIComponent(url)+"&title="+encodeURIComponent(title)+"#Intent;scheme=stigram;package=com.stigram.stickers;S.browser_fallback_url="+encodeURIComponent("https://github.com/uday122t/Stigram/actions/runs/41150277319")+";end";
-   location.href=appLink;
+   const image=card?.querySelector(".sticker-image img");const title=card?.querySelector(".sticker-info strong")?.textContent||"Stigram Sticker";
+   if(!image?.src){window.toast?.("الملصق غير متاح");return}
+   if(window.StigramNative?.requestWhatsAppPack){window.StigramNative.requestWhatsAppPack(JSON.stringify([image.src]),title);return}
+   window.toast?.("لإنشاء حزمة WhatsApp اختر 3 ملصقات من ملفك داخل تطبيق Stigram");
   };
   window.addStickerToTelegram=function(id){
    const card=document.querySelector('[data-sticker-id="'+CSS.escape(String(id))+'"]');
-   const image=card?.querySelector(".sticker-image img");
-   const title=card?.querySelector(".sticker-info strong")?.textContent||"Stigram Sticker";
-   const url=image?.src;
-   if(!url){window.toast?.("هذا الملصق غير متاح للتصدير");return}
-   if(window.StigramNative?.requestTelegramImport){window.StigramNative.requestTelegramImport(JSON.stringify([url]),title);return}
-   window.toast?.("استيراد الملصقات كحزمة Telegram يحتاج تطبيق Stigram للأندرويد");
+   const image=card?.querySelector(".sticker-image img");const title=card?.querySelector(".sticker-info strong")?.textContent||"Stigram Sticker";
+   if(!image?.src){window.toast?.("الملصق غير متاح");return}
+   if(window.StigramNative?.requestTelegramImport){window.StigramNative.requestTelegramImport(JSON.stringify([image.src]),title);return}
+   window.toast?.("استيراد Telegram يحتاج تطبيق Stigram على Android");
   };
  }
- apply();
- const boot=()=>{addThemeUI();addCreateGuide();refresh();wrapPublish();installAction()};
- boot();document.addEventListener("click",()=>{setTimeout(boot,120)});
- window.addEventListener("load",boot);
+ function boot(){addThemeUI();installActions();document.getElementById("firstCreateGuide")?.remove()}
+ apply();boot();window.addEventListener("load",boot);
+ if(window.matchMedia)matchMedia("(prefers-color-scheme: light)").addEventListener?.("change",()=>{if(prefs.theme==="system")apply()});
 })();

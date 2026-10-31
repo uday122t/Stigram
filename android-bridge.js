@@ -24,13 +24,14 @@
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
         <small id="androidPackCount" style="color:var(--muted)">0 من 30 محدد</small>
-        <button class="btn primary" id="sendAndroidPack" type="button" disabled>إرسال الحزمة إلى التطبيق ←</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="sendAndroidPack" type="button" disabled>إضافة إلى WhatsApp</button><button class="btn" id="sendTelegramPack" type="button" disabled>إضافة إلى Telegram</button></div>
       </div>
       <p style="margin:10px 0 0;color:var(--muted);font-size:11px">هذه النسخة ترسل الملصقات الثابتة فقط. ملفات GIF المتحركة تحتاج دعم الحزم المتحركة بشكل منفصل.</p>`;
     const gif = $("gifIdentity");
     if (gif?.parentNode) gif.insertAdjacentElement("afterend", panel); else profile.prepend(panel);
     $("refreshAndroidPack").addEventListener("click", loadOwnStickers);
     $("sendAndroidPack").addEventListener("click", sendPack);
+    $("sendTelegramPack").addEventListener("click", sendTelegramPack);
     $("androidPackList").addEventListener("change", event => {
       const input = event.target.closest("input[data-sticker-id]");
       if (!input) return;
@@ -48,6 +49,8 @@
     const button = $("sendAndroidPack");
     if (count) count.textContent = selected.size + " من 30 محدد (الحد الأدنى 3)";
     if (button) button.disabled = selected.size < 3 || selected.size > 30;
+    const telegramButton = $("sendTelegramPack");
+    if (telegramButton) telegramButton.disabled = selected.size < 1 || selected.size > 50;
   }
 
   async function loadOwnStickers() {
@@ -101,6 +104,28 @@
       const safe = String(item.title || "sticker").replace(/[^a-z0-9_-]+/gi, "-").slice(0, 36) || "sticker";
       return new File([webp], safe + "-" + (index + 1) + ".webp", { type: "image/webp" });
     } finally { URL.revokeObjectURL(source); }
+  }
+
+
+  async function sendTelegramPack() {
+    const button = $("sendTelegramPack");
+    const pack = ownStickers.filter(item => selected.has(item.id));
+    if (!pack.length || pack.length > 50) return;
+    if (!window.StigramNative?.requestTelegramImport) {
+      window.toast?.("استيراد الملصقات كحزمة Telegram يحتاج تطبيق Stigram للأندرويد");
+      return;
+    }
+    button.disabled = true;
+    button.textContent = "جارٍ تجهيز Telegram...";
+    try {
+      const title = "Stigram " + (user?.user_metadata?.username || user?.email?.split("@")[0] || "Stickers");
+      window.StigramNative.requestTelegramImport(JSON.stringify(pack.map(item => item.media_url)), title);
+    } catch (error) {
+      window.toast?.(error.message || "تعذر تجهيز حزمة Telegram");
+    } finally {
+      button.textContent = "إضافة إلى Telegram";
+      updateCount();
+    }
   }
 
   async function sendPack() {

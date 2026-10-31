@@ -61,9 +61,67 @@ function render(){let list=allItems().filter(x=>(category==="all"||x.category===
 function toggleSave(id){saved.has(id)?saved.delete(id):saved.add(id);persist();render()}
 function shareItem(id){let x=allItems().find(a=>a.id===id);if(!x)return;if(x.url){fetch(x.url).then(r=>r.blob()).then(b=>{let f=new File([b],(x.title||"sticker")+".png",{type:b.type});if(navigator.share&&navigator.canShare?.({files:[f]}))navigator.share({files:[f],title:x.title});else{let a=document.createElement("a");a.href=x.url;a.download=f.name;a.click()}}).catch(()=>toast("تعذر مشاركة الملف"))}else navigator.clipboard?.writeText(x.emoji+" "+x.title).then(()=>toast("تم نسخ الستيكر"))}
 function page(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById("page-"+p).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===p));if(p==="create")setTimeout(drawCanvas,40)}
-document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>page(b.dataset.page));document.getElementById("createFab").onclick=()=>page("create");document.getElementById("searchInput").oninput=render;
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>page(b.dataset.page));document.getElementById("createFab").onclick=()=>page("create");document.getElementById("searchInput").oninput=()=>{render();translateInterface()};
 document.getElementById("chips").onclick=e=>{let b=e.target.closest("[data-cat]");if(!b)return;category=b.dataset.cat;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x===b));render()};
-function setLang(){lang=lang==="ar"?"en":"ar";document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.querySelectorAll("[data-i]").forEach(el=>{let d=dict[el.dataset.i];if(d)el.textContent=d[lang==="ar"?0:1]});const b=document.getElementById("langTop");b.textContent=lang==="ar"?"ع":"EN";b.setAttribute("aria-label",lang==="ar"?"Switch to English":"التبديل إلى العربية");render()}document.getElementById("langTop").onclick=setLang;
+
+const englishText={
+"الرئيسية":"Home","استكشف":"Explore","المحفوظات":"Saved","اصنع ستيكر":"Create",
+"ملفي الشخصي":"Profile","أحدث الستيكرات":"Latest stickers","اكتشف الجديد من المجتمع":"Discover what's new",
+"الكل":"All","ضحك":"Funny","حب":"Love","ميمز":"Memes","حيوانات":"Animals","أنمي":"Anime",
+"استكشف عالم Stigram":"Explore Stigram","ستيكراتي المحفوظة ♡":"My saved stickers ♡",
+"استوديو صناعة الستيكرات":"Sticker studio","اختار صورة أو GIF":"Choose an image or GIF",
+"اسم الستيكر":"Sticker title","وصف أو وسوم":"Description or tags","الخلفية":"Background",
+"الاحتفاظ بالخلفية الأصلية":"Keep original background","خلفية شفافة (استخدم الممحاة)":"Transparent background (use eraser)",
+"مثلاً: ضحكة لا تنتهي":"e.g. Endless laughter","ضحك، ميمز، يوميات":"Funny, memes, daily",
+"حجم الممحاة":"Eraser size","خصوصية النشر":"Post visibility","عام — يظهر للجميع":"Public — visible to everyone",
+"خاص — لي فقط":"Private — only me","نشر الستيكر":"Publish sticker","ممحاة":"Eraser","استعادة":"Restore",
+"تدوير":"Rotate","مسح الكل":"Clear all","تنزيل PNG":"Download PNG","معاينة الستيكر تظهر هنا":"Sticker preview appears here",
+"🎞 GIF من GIPHY":"🎞 GIF from GIPHY","ابحث في مكتبة GIPHY الحقيقية أو تصفح الأكثر تداولاً":"Search the GIPHY library or browse trending GIFs",
+"ابحث عن GIF...":"Search GIFs...","بحث":"Search","جارٍ الاتصال...":"Connecting...",
+"جارٍ تحميل GIFs...":"Loading GIFs...","✨ مختارات":"✨ Picks","🆕 الأحدث":"🆕 Latest","🏆 الأكثر إعجاباً":"🏆 Most liked",
+"هوية GIF الخاصة بك":"Your GIF identity","هوية Stigram":"Stigram identity","نسخ الاسم":"Copy name",
+"ملصقات GIF الخاصة بي":"My GIF stickers","كل منشوراتي":"All my posts","تسجيل الدخول":"Log in",
+"تسجيل الخروج":"Log out","إنشاء حساب جديد":"Create account","أهلاً بعودتك إلى Stigram ✦":"Welcome back to Stigram ✦",
+"سجّل دخولك إلى حسابك":"Log in to your account","البريد الإلكتروني":"Email address","كلمة المرور":"Password",
+"اسم المستخدم":"Username","زائر Stigram":"Stigram guest","ابحث عن ستيكر أو مستخدم أو وسم...":"Search stickers, users or tags...",
+"ما في ستيكرات منشورة لسه":"No stickers have been posted yet","لسه ما حفظت أي ستيكر":"You haven't saved any stickers yet",
+"منشوراتك رح تظهر هون":"Your posts will appear here","ابدأ صناعة الستيكرات":"Start creating",
+"خلّي تعبيرك يحكي ✨":"Let your expression speak ✨","اكتشف ستيكرات جديدة واصنع مجموعتك الخاصة":"Discover new stickers and build your own collection"
+};
+function translateInterface(){
+ const english=lang==="en";
+ document.documentElement.lang=lang;
+ document.documentElement.dir=english?"ltr":"rtl";
+ document.querySelectorAll("[data-i]").forEach(el=>{const d=dict[el.dataset.i];if(d)el.textContent=d[english?1:0]});
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+ let node;
+ while((node=walker.nextNode())){
+   if(!node.parentElement||node.parentElement.closest("script,style"))continue;
+   if(node.__stigramArabic===undefined)node.__stigramArabic=node.nodeValue;
+   const original=node.__stigramArabic;
+   const key=original.trim();
+   if(english&&englishText[key])node.nodeValue=original.replace(key,englishText[key]);
+   else if(!english)node.nodeValue=original;
+ }
+ document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{
+   if(el.dataset.arPlaceholder===undefined)el.dataset.arPlaceholder=el.getAttribute("placeholder")||"";
+   const ar=el.dataset.arPlaceholder;
+   el.setAttribute("placeholder",english?(englishText[ar]||ar):ar);
+ });
+ document.querySelectorAll("[aria-label]").forEach(el=>{
+   if(el.dataset.arLabel===undefined)el.dataset.arLabel=el.getAttribute("aria-label")||"";
+   const ar=el.dataset.arLabel;
+   el.setAttribute("aria-label",english?(englishText[ar]||ar):ar);
+ });
+ const b=document.getElementById("langTop");
+ b.textContent=english?"ع":"EN";
+ b.setAttribute("aria-label",english?"Switch to Arabic":"Switch to English");
+ window.dispatchEvent(new Event("stigram:language"));
+}
+lang=localStorage.getItem("stigram_language_v1")==="en"?"en":"ar";
+function setLang(){lang=lang==="ar"?"en":"ar";localStorage.setItem("stigram_language_v1",lang);translateInterface();render();translateInterface()}
+document.getElementById("langTop").onclick=setLang;
+
 function modal(show){document.getElementById("authModal").classList.toggle("show",show);if(show)showAuthMode("in")}document.getElementById("authOpen").onclick=()=>modal(true);document.getElementById("authOpen2").onclick=async()=>{if(user&&sb){let out=await sb.auth.signOut();if(out.error)toast(out.error.message);else{user=null;profile();toast("تم تسجيل الخروج")}}else modal(true)};document.getElementById("authModal").onclick=e=>{if(e.target.id==="authModal")modal(false)};
 let profileLoad=0;async function profile(){const request=++profileLoad;let name=user?.user_metadata?.username||user?.email?.split("@")[0]||"زائر Stigram";if(user&&sb){try{const result=await sb.from("profiles").select("username,display_name").eq("id",user.id).maybeSingle();if(request!==profileLoad)return;if(!result.error&&result.data)name=result.data.display_name||result.data.username||name;else if(result.error)console.warn("Stigram profile lookup:",result.error.message)}catch(error){console.warn("Stigram profile lookup failed:",error)}}if(request!==profileLoad)return;const handle=user?"@"+(user.user_metadata?.username||name):"@guest";document.getElementById("sideName").textContent=name;document.getElementById("profileName").textContent=name;document.getElementById("sideHandle").textContent=handle;document.getElementById("profileHandle").textContent=handle;document.getElementById("sideAvatar").textContent=(name[0]||"S").toUpperCase();document.getElementById("profileAvatar").textContent=(name[0]||"S").toUpperCase();document.getElementById("authOpen2").textContent=user?"تسجيل الخروج":"تسجيل الدخول"}
 function showAuthMode(mode){let login=mode==="in";document.getElementById("loginPanel").hidden=!login;document.getElementById("signupPanel").hidden=login;document.getElementById("showLogin").classList.toggle("primary",login);document.getElementById("showSignup").classList.toggle("primary",!login)}document.getElementById("showLogin").onclick=()=>showAuthMode("in");document.getElementById("showSignup").onclick=()=>showAuthMode("up");document.getElementById("authCloseLogin").onclick=()=>modal(false);document.getElementById("authCloseSignup").onclick=()=>modal(false);
@@ -77,7 +135,7 @@ document.getElementById("eraseBtn").onclick=()=>{eraseMode=true;toast("المم�
 function point(e){let r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}canvas.onpointerdown=e=>{if(!eraseMode)return;snapshot();drawing=true;last=point(e);canvas.setPointerCapture(e.pointerId)};canvas.onpointermove=e=>{if(!drawing)return;let p=point(e);ctx.save();ctx.globalCompositeOperation="destination-out";ctx.lineWidth=+document.getElementById("brushSize").value;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.restore();last=p};canvas.onpointerup=()=>drawing=false;
 async function publish(){if(!sourceImage){toast("اختار صورة أولاً");return}let title=document.getElementById("stickerTitle").value.trim()||"ستيكر جديد",tags=document.getElementById("stickerTags").value.split(",").map(x=>x.trim()).filter(Boolean),visibility=document.getElementById("visibility").value;let blob=await new Promise(r=>canvas.toBlob(r,"image/png"));let url=URL.createObjectURL(blob),id="local"+Date.now();let item={id,title,category:tags[0]||"ستيكر",owner:user?.email||"أنت",url,visibility};if(sb&&user){let path=user.id+"/"+id+".png";let up=await sb.storage.from("stigrams").upload(path,blob,{contentType:"image/png"});if(up.error){toast(up.error.message);return}let pub=sb.storage.from("stigrams").getPublicUrl(path).data.publicUrl;let ins=await sb.from("stickers").insert({user_id:user.id,title,description:tags.join(", "),media_url:pub,media_type:"image",is_public:visibility==="public",tags}).select("id").single();if(ins.error){await sb.storage.from("stigrams").remove([path]);toast("تعذر حفظ بيانات الستيكر: "+ins.error.message);return}item.id=ins.data.id;item.owner=user.user_metadata?.username||user.email?.split("@")[0]||"عضو";item.url=pub;item.cloud=true}else if(CONFIG.SUPABASE_URL&&CONFIG.SUPABASE_ANON_KEY){toast("سجّل الدخول لنشر الستيكر على حسابك");return}localItems.unshift(item);persist();render();toast("تم حفظ الستيكر في Stigram");document.getElementById("stickerTitle").value="";page("profile")}
 document.getElementById("publishBtn").onclick=publish;
-async function init(){try{if(CONFIG.SUPABASE_URL&&CONFIG.SUPABASE_ANON_KEY&&window.supabase){sb=window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data,error}=await sb.auth.getSession();if(error)console.warn("Stigram session:",error.message);user=data?.session?.user||null;sb.auth.onAuthStateChange((event,session)=>{user=session?.user||null;profile();if(event==="SIGNED_IN"||event==="TOKEN_REFRESHED")loadCloudStickers()});if(user)await loadCloudStickers()}}catch(error){console.error("Stigram initialization failed:",error);toast("تعذر تهيئة الحساب: "+(error.message||"خطأ غير معروف"))}await profile();render()}async function loadCloudStickers(){if(!sb||!user)return;const activeUser=user;const q=await sb.from("stickers").select("*").or("is_public.eq.true,user_id.eq."+activeUser.id).order("created_at",{ascending:false}).limit(100);if(q.error){console.warn("Stigram stickers:",q.error.message);return}if(!user||user.id!==activeUser.id)return;localItems=localItems.filter(x=>!x.cloud);q.data.forEach(x=>localItems.push({id:x.id,title:x.title,category:x.tags?.[0]||"ستيكر",owner:x.user_id===activeUser.id?(activeUser.user_metadata?.username||activeUser.email?.split("@")[0]||"أنت"):x.user_id,url:x.media_url,likes:0,cloud:true,visibility:x.is_public?"public":"private"}));persist();render()}init();
+async function init(){try{if(CONFIG.SUPABASE_URL&&CONFIG.SUPABASE_ANON_KEY&&window.supabase){sb=window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data,error}=await sb.auth.getSession();if(error)console.warn("Stigram session:",error.message);user=data?.session?.user||null;sb.auth.onAuthStateChange((event,session)=>{user=session?.user||null;profile();if(event==="SIGNED_IN"||event==="TOKEN_REFRESHED")loadCloudStickers()});if(user)await loadCloudStickers()}}catch(error){console.error("Stigram initialization failed:",error);toast("تعذر تهيئة الحساب: "+(error.message||"خطأ غير معروف"))}await profile();render();translateInterface()}async function loadCloudStickers(){if(!sb||!user)return;const activeUser=user;const q=await sb.from("stickers").select("*").or("is_public.eq.true,user_id.eq."+activeUser.id).order("created_at",{ascending:false}).limit(100);if(q.error){console.warn("Stigram stickers:",q.error.message);return}if(!user||user.id!==activeUser.id)return;localItems=localItems.filter(x=>!x.cloud);q.data.forEach(x=>localItems.push({id:x.id,title:x.title,category:x.tags?.[0]||"ستيكر",owner:x.user_id===activeUser.id?(activeUser.user_metadata?.username||activeUser.email?.split("@")[0]||"أنت"):x.user_id,url:x.media_url,likes:0,cloud:true,visibility:x.is_public?"public":"private"}));persist();render()}init();
 </script><script src="./social.js?v=20261031-theme-v2"></script>
 <script src="./enhancements.js?v=20261031-theme-v2"></script>
 <script src="./giphy.js"></script>

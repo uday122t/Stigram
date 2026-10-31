@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://uday122t.github.io/Stigram/sitemap.xml

@@ -8,7 +8,6 @@ input.addEventListener("input",()=>{
  clearTimeout(timer);const term=input.value.trim(),id=++seq;
  if(!term){panel.hidden=true;return}
  timer=setTimeout(async()=>{
-  const local=[].filter(x=>(x.username+" "+x.display_name).toLowerCase().includes(term.toLowerCase()));
   try{
    const client=(typeof sb!=="undefined"?sb:null);
    if(!client){panel.hidden=true;return}
@@ -16,9 +15,9 @@ input.addEventListener("input",()=>{
    if(!safe){panel.hidden=true;return}
    const q=await client.from("profiles").select("id,username,display_name").or("username.ilike.%"+safe+"%,display_name.ilike.%"+safe+"%").limit(6);
    if(id!==seq)return;
-   const rows=q.error?local:q.data||[];
+   const rows=q.error?[]:q.data||[];
    show(rows);
-  }catch(_){if(id===seq)show(local)}
+  }catch(_){if(id===seq)show([])}
  },260);
 });
 panel.addEventListener("click",async e=>{
@@ -36,6 +35,7 @@ panel.addEventListener("click",async e=>{
   document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page==="explore"));
   const grid=document.getElementById("exploreGrid");
   if(grid)grid.innerHTML=mapped.length?mapped.map(x=>card(x)).join(""):'<div class="empty">هذا الحساب ما عنده ملصقات عامة لسه</div>';
+  if(typeof render==="function")render();
  }catch(err){toast("تعذر تحميل الحساب: "+(err.message||"خطأ"))}
 });
 document.addEventListener("click",e=>{if(!panel.contains(e.target)&&!e.target.closest(".search"))panel.hidden=true});

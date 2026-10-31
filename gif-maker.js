@@ -25,7 +25,7 @@
   panel.className = "gif-maker";
   panel.innerHTML = `
     <h3>🎞 حوّل صورتك إلى GIF متحرك</h3>
-    <p>اختار صورة من الأعلى، حدّد الحركة، وصدّر ملف GIF حقيقي قابل للنشر.</p>
+    <p>اختر صورة من الأعلى، وحدد الحركة، ثم صدّر ملف GIF فعلياً جاهزاً للنشر.</p>
     <div class="gif-controls">
       <label>تأثير الحركة
         <select id="gifEffect">
@@ -278,6 +278,6 @@
     resultUrl = null; resultBlob = null; resultFile = null;
     $("gifPreview").style.display = "none";
     download.disabled = true; use.disabled = true;
-    setStatus("تم تحميل الصورة. اختار تأثير الحركة واضغط «إنشاء GIF».");
+    setStatus("تم تحميل الصورة. اختر تأثير الحركة، ثم اضغط «إنشاء GIF».");
   });
 })();

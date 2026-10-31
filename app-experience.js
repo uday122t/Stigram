@@ -1,9 +1,9 @@
 (() => {
  "use strict";
- const root=document.documentElement,key="stigram_preferences_v2";
+ const root=document.documentElement,key="stigram_preferences_v3",legacyKey="stigram_preferences_v2";
  const defaults={theme:"dark",palette:"midnight",accent:""};
  let prefs={...defaults};
- try{prefs={...defaults,...JSON.parse(localStorage.getItem(key)||"{}")}}catch(_){}
+ try{const stored=localStorage.getItem(key)||localStorage.getItem(legacyKey);if(stored){const parsed=JSON.parse(stored);if(parsed&&typeof parsed==="object")prefs={...defaults,...parsed}}}catch(_){}
  const palettes={
   midnight:["#55c8ff","#72e0b1"],purple:["#a78bfa","#f0abfc"],cyan:["#22d3ee","#67e8f9"],
   emerald:["#34d399","#a3e635"],rose:["#fb7185","#f9a8d4"],sunset:["#fb923c","#f472b6"],
@@ -42,6 +42,9 @@
   const chosen=hsvToHex(h,s,v);prefs.accent=chosen;prefs.palette="custom";apply();updatePickerFromHex(chosen);
   document.getElementById("themeMenu").querySelectorAll("[data-palette]").forEach(x=>x.classList.remove("active"));
  }
+ function persistPreferences(){
+  try{const snapshot=JSON.stringify({theme:prefs.theme,palette:prefs.palette,accent:prefs.accent});localStorage.setItem(key,snapshot);return localStorage.getItem(key)===snapshot}catch(_){return false}
+ }
  function apply(){
   if(!palettes[prefs.palette]&&prefs.palette!=="custom")prefs.palette="midnight";
   if(!["dark","light","system"].includes(prefs.theme))prefs.theme="dark";
@@ -52,6 +55,7 @@
   const primary=prefs.accent||colors[0];
   root.style.setProperty("--accent",primary,"important");
   root.style.setProperty("--accent2",prefs.palette==="custom"?lighter(primary):colors[1],"important");
+  persistPreferences();
   refresh();
  }
  function addThemeUI(){
@@ -74,8 +78,8 @@
    const palette=e.target.closest("[data-palette]");if(palette){prefs.palette=palette.dataset.palette;prefs.accent="";apply()}
    if(e.target.id==="resetAppearance"){prefs={...defaults};apply()}
    if(e.target.id==="saveAppearance"||e.target.closest("#saveAppearance")){
-    try{const snapshot=JSON.stringify(prefs);localStorage.setItem(key,snapshot);const saved=JSON.parse(localStorage.getItem(key)||"{}");if(saved.theme!==prefs.theme||saved.palette!==prefs.palette||saved.accent!==prefs.accent)throw new Error("save verification failed");prefs={...defaults,...saved};apply();const note=document.getElementById("themeSaveNote");if(note)note.textContent="تم حفظ اللون نفسه وتطبيقه بنجاح ✓"}
-    catch(_){const note=document.getElementById("themeSaveNote");if(note)note.textContent="تعذر الحفظ — تحقق من مساحة التخزين"}
+    try{if(!persistPreferences())throw new Error("storage verification failed");const saved=JSON.parse(localStorage.getItem(key)||"{}");if(saved.theme!==prefs.theme||saved.palette!==prefs.palette||saved.accent!==prefs.accent)throw new Error("save verification failed");prefs={...defaults,...saved};apply();const note=document.getElementById("themeSaveNote");if(note)note.textContent="تم تثبيت إعداداتك وحفظها ✓"}
+    catch(_){const note=document.getElementById("themeSaveNote");if(note)note.textContent="تعذر تثبيت الإعدادات في التخزين — لم يتم تغيير اللون"}
    }
   });
   ["customHue","customSat","customVal"].forEach(id=>menu.querySelector("#"+id).addEventListener("input",applyPicker));

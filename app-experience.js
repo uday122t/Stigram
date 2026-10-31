@@ -205,16 +205,6 @@
     if (preview) preview.style.backgroundColor = hex;
   }
 
-  function commitAppearanceAndClose() {
-    const note = document.getElementById("themeSaveNote");
-    if (!saveSettings()) {
-      if (note) note.textContent = "تعذر حفظ المظهر — حاول مرة ثانية";
-      return;
-    }
-    document.getElementById("themeMenu")?.classList.remove("open");
-    document.getElementById("appearanceButton")?.setAttribute("aria-expanded", "false");
-  }
-
   function buildAppearanceMenu() {
     const topbar = document.querySelector(".topbar");
     if (!topbar || document.getElementById("appearanceButton")) return;
@@ -247,11 +237,32 @@
         '<label>القيمة / السطوع <input id="customVal" class="color-range val-range" type="range" min="0" max="100" value="100"></label>' +
       '</div>' +
       '<div class="theme-footer"><button type="button" class="theme-choice" id="resetAppearance">إعادة ضبط</button>' +
-      '<button type="button" class="btn primary" id="commitAppearance"><span aria-hidden="true">✓</span> حفظ</button></div>' +
-      '<p class="theme-save-note" id="themeSaveNote">اختياراتك تُحفظ تلقائياً — اضغط حفظ للخروج</p>';
+      '<button type="button" class="btn primary" id="finishThemeCustomization"><span aria-hidden="true">✓</span> تم</button></div>' +
+      '<p class="theme-save-note" id="themeSaveNote">اختياراتك محفوظة تلقائياً</p>';
 
     topbar.appendChild(trigger);
     document.body.appendChild(menu);
+
+    const finishButton = menu.querySelector("#finishThemeCustomization");
+    finishButton.addEventListener("click", () => {
+      try {
+        const snapshot = JSON.stringify({
+          theme: settings.theme,
+          palette: settings.palette,
+          accent: settings.accent
+        });
+        localStorage.setItem(STORAGE_KEY, snapshot);
+        if (localStorage.getItem(STORAGE_KEY) !== snapshot) {
+          throw new Error("Appearance settings verification failed");
+        }
+        menu.classList.remove("open");
+        trigger.setAttribute("aria-expanded", "false");
+      } catch (error) {
+        console.error("Could not finish appearance customization:", error);
+        const note = menu.querySelector("#themeSaveNote");
+        if (note) note.textContent = "تعذر تثبيت المظهر — حاول مرة ثانية";
+      }
+    });
 
     trigger.setAttribute("aria-controls", "themeMenu");
     trigger.setAttribute("aria-expanded", "false");
@@ -285,7 +296,6 @@
         return;
       }
 
-      if (event.target.closest("#commitAppearance")) commitAppearanceAndClose();
     });
 
     ["customHue", "customSat", "customVal"].forEach(id => {

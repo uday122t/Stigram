@@ -136,6 +136,10 @@
     button.disabled = true;
     button.textContent = "جارٍ تجهيز الحزمة...";
     try {
+      if (window.StigramNative?.requestWhatsAppPack) {
+        window.StigramNative.requestWhatsAppPack(JSON.stringify(pack.map(item => item.media_url)), "Stigram Stickers");
+        return;
+      }
       const files = [];
       for (let i = 0; i < pack.length; i++) files.push(await toWebp(pack[i], i));
       if (!navigator.share || !navigator.canShare || !navigator.canShare({ files })) {

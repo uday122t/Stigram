@@ -12,7 +12,7 @@
     if (!profile || $("androidPackPanel")) return;
     const panel = document.createElement("section");
     panel.id = "androidPackPanel";
-    panel.style.cssText = "margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(120deg,#171e2d,#132b38)";
+    panel.style.cssText = "margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--surface)";
     panel.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <div><h3 style="margin:0">📲 حزمة WhatsApp من الموقع</h3>
@@ -76,9 +76,9 @@
     const valid = new Set(ownStickers.map(item => item.id));
     [...selected].forEach(id => { if (!valid.has(id)) selected.delete(id); });
     list.innerHTML = ownStickers.length ? ownStickers.map(item => `
-      <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:13px;background:#0e1420;min-width:0;cursor:pointer">
-        <input type="checkbox" data-sticker-id="${esc(item.id)}" ${selected.has(item.id) ? "checked" : ""} style="accent-color:#8b7cff">
-        <img src="${esc(item.media_url)}" alt="" loading="lazy" style="width:48px;height:48px;object-fit:contain;background:#20283a;border-radius:9px">
+      <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:13px;background:var(--surface-strong);min-width:0;cursor:pointer">
+        <input type="checkbox" data-sticker-id="${esc(item.id)}" ${selected.has(item.id) ? "checked" : ""} style="accent-color:var(--accent)">
+        <img src="${esc(item.media_url)}" alt="" loading="lazy" style="width:48px;height:48px;object-fit:contain;background:var(--surface-soft);border-radius:9px">
         <span style="font-size:11px;overflow-wrap:anywhere">${esc(item.title || "ملصق")}</span>
       </label>`).join("") : '<div class="empty">ما عندك ملصقات ثابتة منشورة بعد</div>';
     updateCount();

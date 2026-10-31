@@ -10,12 +10,21 @@
   arctic:["#60a5fa","#a5f3fc"],graphite:["#a1a1aa","#d4d4d8"],ocean:["#38bdf8","#2dd4bf"],crimson:["#f87171","#fda4af"]
  };
  const names={midnight:"Midnight Blue",purple:"Purple Nebula",cyan:"Cyber Cyan",emerald:"Emerald Glass",rose:"Rose Quartz",sunset:"Sunset",arctic:"Arctic",graphite:"Graphite",ocean:"Ocean",crimson:"Crimson"};
+ const validHex=value=>typeof value==="string"&&/^#[0-9a-f]{6}$/i.test(value);
  function effectiveTheme(){return prefs.theme==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):prefs.theme}
+ function lighter(hex,amount=.42){
+  const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;
+  const mix=v=>Math.round(v+(255-v)*amount).toString(16).padStart(2,"0");
+  return "#"+mix(r)+mix(g)+mix(b);
+ }
  function apply(){
+  if(!palettes[prefs.palette])prefs.palette="midnight";
+  if(!["dark","light","system"].includes(prefs.theme))prefs.theme="dark";
+  if(!validHex(prefs.accent))prefs.accent="";
   root.dataset.theme=effectiveTheme();root.dataset.appearance=prefs.theme;root.dataset.palette=prefs.palette;
-  const colors=palettes[prefs.palette]||palettes.midnight;
-  root.style.setProperty("--accent",prefs.accent||colors[0],"important");
-  root.style.setProperty("--accent2",prefs.accent?"color-mix(in srgb, "+prefs.accent+" 58%, #ffffff)":colors[1],"important");
+  const colors=palettes[prefs.palette],primary=prefs.accent||colors[0];
+  root.style.setProperty("--accent",primary,"important");
+  root.style.setProperty("--accent2",prefs.accent?lighter(primary):colors[1],"important");
   refresh();
  }
  function addThemeUI(){
@@ -39,13 +48,24 @@
     catch(_){const note=document.getElementById("themeSaveNote");if(note)note.textContent="تعذر الحفظ — تحقق من مساحة التخزين"}
    }
   });
-  menu.querySelector("#customAccent").addEventListener("input",e=>{prefs.accent=e.target.value;apply()});
+  const customPicker=menu.querySelector("#customAccent");
+  const updateCustomColor=e=>{
+   const chosen=e.currentTarget.value.toLowerCase();
+   if(!validHex(chosen))return;
+   prefs.accent=chosen;
+   root.style.setProperty("--accent",chosen,"important");
+   root.style.setProperty("--accent2",lighter(chosen),"important");
+   root.dataset.palette="custom";
+   menu.querySelectorAll("[data-palette]").forEach(x=>x.classList.remove("active"));
+  };
+  customPicker.addEventListener("input",updateCustomColor);
+  customPicker.addEventListener("change",updateCustomColor);
   document.addEventListener("click",e=>{if(!menu.contains(e.target)&&!button.contains(e.target))menu.classList.remove("open")});
  }
  function refresh(){
   document.querySelectorAll("#themeMenu [data-mode]").forEach(x=>x.classList.toggle("active",x.dataset.mode===prefs.theme));
   document.querySelectorAll("#themeMenu [data-palette]").forEach(x=>x.classList.toggle("active",x.dataset.palette===prefs.palette));
-  const color=document.getElementById("customAccent");if(color)color.value=prefs.accent||palettes[prefs.palette][0];
+  const color=document.getElementById("customAccent");if(color)color.value=validHex(prefs.accent)?prefs.accent:palettes[prefs.palette||"midnight"][0];
  }
  function installActions(){
   function openPackBuilder(id,platform){

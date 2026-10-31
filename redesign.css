@@ -77,3 +77,26 @@ body{background:radial-gradient(ellipse at 82% -8%,#17466a66,transparent 38%),ra
 .page .modal{background:#101d2d!important;border:1px solid #2b4055!important;color:#eaf6ff!important}
 button,.btn{color:inherit}
 @media(max-width:700px){.sidebar{background:rgba(10,20,34,.96)!important;border-color:#2a4055!important;box-shadow:0 12px 40px #0009!important}.create-fab{border-color:#0b1725!important}}
+
+
+/* Stigram dark system polish — single source of truth */
+:root,:root[data-theme="dark"]{color-scheme:dark!important;--bg:#070d18!important;--panel:#101d2d!important;--panel2:#15283b!important;--line:#263b50!important;--text:#edf7ff!important;--muted:#8fa9bd!important;--accent:#55c8ff!important;--accent2:#72e0b1!important;--glass:rgba(16,29,45,.94)!important;--shadow:0 18px 48px rgba(0,0,0,.34)!important}
+html,body{background:#070d18!important;color:#edf7ff!important;color-scheme:dark!important}
+body{background:radial-gradient(ellipse at 85% -10%,rgba(42,153,205,.18),transparent 38%),radial-gradient(ellipse at 5% 55%,rgba(54,180,135,.12),transparent 34%),#070d18!important}
+.sidebar,.sticker-card,.page .modal,.profile-head,#gifIdentity,#giphyPanel,.search-results,#androidPackPanel,.editor-preview,.modal,.modal-content,.auth-box,.auth-modal,.dropdown-menu,.context-menu,.settings-panel,.profile-card,.stx-row{background:rgba(15,28,44,.97)!important;color:#edf7ff!important;border-color:#263b50!important;box-shadow:0 16px 42px rgba(0,0,0,.3)!important}
+.sticker-info,.sticker-info strong,.section-head h2,.profile-head h2,.page h2,.page h3,label,.modal label,.field label{color:#edf7ff!important}
+.search input,.field input,.field textarea,.field select,input,textarea,select{background:#0b1726!important;color:#edf7ff!important;border:1px solid #2a4158!important}
+input::placeholder,textarea::placeholder{color:#7793a9!important;opacity:1}
+.chip,.icon-btn,.btn:not(.primary),.theme-choice,.stx-row,.search-result{background:#14263a!important;color:#b8d2e3!important;border-color:#2a4158!important}
+.chip.active,.nav button.active{background:linear-gradient(120deg,#123c56,#123c36)!important;color:#eafaff!important;border-color:#3b8eaa!important}
+.btn.primary,.create-fab{background:linear-gradient(120deg,#45bff2,#55d5a0)!important;color:#061b29!important}
+.empty,.search-results .search-result:hover{background:#101f31!important;color:#91aabd!important}
+.profile-cover{background:linear-gradient(115deg,#103b59,#12483d 58%,#26365e)!important;color:#b9eaff!important}
+.profile-head .avatar{border-color:#183149!important}
+#androidPackPanel label{background:#102136!important;border-color:#2a4158!important}
+#androidPackPanel input{accent-color:#55c8ff!important}
+#themeMenu{background:rgba(12,24,39,.98)!important;color:#edf7ff!important;border-color:#2a4158!important}
+.toast{background:#13283b!important;color:#edf7ff!important;border:1px solid #2a4158!important}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #55c8ff!important;outline-offset:2px}
+.app-download{display:none!important}
+@media(max-width:700px){.sidebar{background:rgba(10,22,36,.98)!important;border-color:#263b50!important}.main{padding-bottom:112px}.sticker-card{background:#101d2d!important}}
